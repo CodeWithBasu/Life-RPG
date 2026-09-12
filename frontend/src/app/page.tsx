@@ -10,37 +10,15 @@ export default function Home() {
       <motion.div 
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="w-full h-[200px] rounded-[32px] overflow-hidden relative shadow-soft bg-[#dbeafe]" // A sky blue base
+        className="w-full h-[220px] rounded-[32px] overflow-hidden relative shadow-soft"
       >
-        {/* Background Image Placeholder (Sky/Castle) */}
-        <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-sky-100 flex justify-end">
-          {/* Fake castle shape */}
-          <div className="w-1/2 h-full relative opacity-50">
-             <div className="absolute bottom-10 right-4 w-12 h-20 bg-white/40 rounded-t-lg"></div>
-             <div className="absolute bottom-10 right-14 w-8 h-24 bg-white/40 rounded-t-lg"></div>
-          </div>
-        </div>
-
-        {/* White Text Box Overlay */}
-        <div className="absolute bottom-0 right-0 w-[55%] h-[110px] bg-white rounded-tl-[24px] pl-4 pt-3 pr-4 flex flex-col z-20">
-          <h2 className="text-[17px] font-extrabold text-slate-800 leading-tight">A Brighter You</h2>
-          <p className="text-[12px] text-slate-500 mt-1 leading-snug font-medium pr-2">
-            "Small steps today, legendary tomorrow."
-          </p>
-        </div>
-
-        {/* Avatar */}
-        <div className="absolute bottom-0 left-0 w-[55%] h-full flex items-end justify-center z-30 pb-4 pl-2">
-          {/* Avatar Placeholder */}
-          <div className="w-32 h-40 bg-transparent flex items-end justify-center relative">
-            <span className="text-[110px] drop-shadow-xl leading-none">🧑🏻‍🚀</span>
-            
-            {/* Level Badge */}
-            <div className="absolute bottom-2 right-0 translate-x-4 bg-slate-800 text-yellow-400 text-xs font-black px-4 py-1.5 rounded-full border-[3px] border-yellow-500 shadow-md whitespace-nowrap">
-              Lv. 12
-            </div>
-          </div>
-        </div>
+        <div 
+          className="w-full h-full bg-no-repeat bg-cover"
+          style={{ 
+            backgroundImage: "url('/hero-card.png')",
+            backgroundPosition: "center 15%" // Shifts the image up to crop out the TopBar
+          }}
+        />
       </motion.div>
 
       {/* Progress Bars Container */}
