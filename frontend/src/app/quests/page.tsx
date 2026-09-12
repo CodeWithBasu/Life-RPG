@@ -45,7 +45,7 @@ export default function QuestsPage() {
         className="space-y-3.5"
       >
         <QuestCard 
-          icon="☀️"
+          iconPath="/icons/sun.jpg"
           title="Morning Routine"
           desc="Set the tone for a legendary day."
           xp={50}
@@ -53,7 +53,7 @@ export default function QuestsPage() {
         />
         
         <QuestCard 
-          icon="📖"
+          iconPath="/icons/book.jpg"
           title="Study Something"
           desc="A sharper mind, a brighter you."
           xp={75}
@@ -61,7 +61,7 @@ export default function QuestsPage() {
         />
 
         <QuestCard 
-          icon="🏋️‍♂️"
+          iconPath="/icons/dumbbell.jpg"
           title="Move Your Body"
           desc="Stronger today. Further tomorrow."
           xp={50}
@@ -69,7 +69,7 @@ export default function QuestsPage() {
         />
 
         <QuestCard 
-          icon="🍎"
+          iconPath="/icons/apple.jpg"
           title="Healthy Meal"
           desc="Fuel your adventure."
           xp={40}
@@ -77,7 +77,7 @@ export default function QuestsPage() {
         />
 
         <QuestCard 
-          icon="🍃"
+          iconPath="/icons/leaf.jpg"
           title="Be Kind"
           desc="Make someone's day brighter."
           xp={30}
@@ -89,15 +89,19 @@ export default function QuestsPage() {
   );
 }
 
-function QuestCard({ icon, title, desc, xp, checked }: any) {
+function QuestCard({ iconPath, title, desc, xp, checked }: any) {
   return (
     <motion.div 
       whileTap={{ scale: 0.98 }}
       className={`bg-white rounded-[28px] p-4 shadow-soft flex items-center gap-4 transition-opacity ${checked ? 'opacity-80' : 'opacity-100'}`}
     >
-      {/* 3D Emoji Icon (No background) */}
+      {/* 3D Generated Icon */}
       <div className="w-14 h-14 flex items-center justify-center shrink-0">
-        <span className="text-[40px] drop-shadow-md leading-none">{icon}</span>
+        <img 
+          src={iconPath} 
+          alt={title} 
+          className="w-14 h-14 object-contain mix-blend-multiply"
+        />
       </div>
       
       <div className="flex-1 min-w-0 pr-2">
