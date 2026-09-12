@@ -1,14 +1,14 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sun, Book, Dumbbell, Apple, Sprout, ChevronRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 export default function QuestsPage() {
   const [activeTab, setActiveTab] = useState("Active");
   
   return (
-    <div className="flex flex-col gap-6 p-4">
+    <div className="flex flex-col gap-5 p-5 max-w-md mx-auto pb-24">
       
       {/* Tabs */}
       <div className="flex items-center justify-between bg-white rounded-full p-1.5 shadow-soft">
@@ -16,9 +16,9 @@ export default function QuestsPage() {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 py-2 text-sm font-bold rounded-full transition-colors ${
+            className={`flex-1 py-2.5 text-[13px] font-bold rounded-full transition-all ${
               activeTab === tab 
-                ? "bg-yellow-400 text-yellow-900 shadow-sm" 
+                ? "gel-bar-yellow text-yellow-900 shadow-md" 
                 : "text-slate-400 hover:text-slate-600"
             }`}
           >
@@ -28,13 +28,13 @@ export default function QuestsPage() {
       </div>
 
       {/* Header */}
-      <div className="flex items-center justify-between px-2 mt-2">
+      <div className="flex items-center justify-between px-1 mt-1">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Quest Log</h1>
-          <p className="text-sm text-slate-500">Small steps. Big adventures.</p>
+          <h1 className="text-[22px] font-extrabold text-[#1e293b]">Quest Log</h1>
+          <p className="text-[13px] text-slate-500 font-medium mt-0.5">Small steps. Big adventures.</p>
         </div>
-        <button className="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-200 transition-colors">
-          <ChevronRight className="w-5 h-5" />
+        <button className="text-yellow-500 hover:text-yellow-600 transition-colors">
+          <ChevronRight className="w-6 h-6 stroke-[3]" />
         </button>
       </div>
 
@@ -42,11 +42,10 @@ export default function QuestsPage() {
       <motion.div 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="space-y-4"
+        className="space-y-3.5"
       >
         <QuestCard 
-          icon={<Sun className="w-6 h-6 text-yellow-500 fill-yellow-500" />}
-          iconBg="bg-yellow-100"
+          icon="☀️"
           title="Morning Routine"
           desc="Set the tone for a legendary day."
           xp={50}
@@ -54,8 +53,7 @@ export default function QuestsPage() {
         />
         
         <QuestCard 
-          icon={<Book className="w-6 h-6 text-blue-500 fill-blue-500" />}
-          iconBg="bg-blue-100"
+          icon="📖"
           title="Study Something"
           desc="A sharper mind, a brighter you."
           xp={75}
@@ -63,8 +61,7 @@ export default function QuestsPage() {
         />
 
         <QuestCard 
-          icon={<Dumbbell className="w-6 h-6 text-indigo-500 fill-indigo-500" />}
-          iconBg="bg-indigo-100"
+          icon="🏋️‍♂️"
           title="Move Your Body"
           desc="Stronger today. Further tomorrow."
           xp={50}
@@ -72,8 +69,7 @@ export default function QuestsPage() {
         />
 
         <QuestCard 
-          icon={<Apple className="w-6 h-6 text-rose-500 fill-rose-500" />}
-          iconBg="bg-rose-100"
+          icon="🍎"
           title="Healthy Meal"
           desc="Fuel your adventure."
           xp={40}
@@ -81,8 +77,7 @@ export default function QuestsPage() {
         />
 
         <QuestCard 
-          icon={<Sprout className="w-6 h-6 text-emerald-500 fill-emerald-500" />}
-          iconBg="bg-emerald-100"
+          icon="🍃"
           title="Be Kind"
           desc="Make someone's day brighter."
           xp={30}
@@ -94,35 +89,43 @@ export default function QuestsPage() {
   );
 }
 
-function QuestCard({ icon, iconBg, title, desc, xp, checked }: any) {
+function QuestCard({ icon, title, desc, xp, checked }: any) {
   return (
     <motion.div 
       whileTap={{ scale: 0.98 }}
-      className={`bg-white rounded-[24px] p-4 shadow-soft flex items-center gap-4 transition-opacity ${checked ? 'opacity-60' : 'opacity-100'}`}
+      className={`bg-white rounded-[28px] p-4 shadow-soft flex items-center gap-4 transition-opacity ${checked ? 'opacity-80' : 'opacity-100'}`}
     >
-      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 shadow-inner-soft ${iconBg}`}>
-        {icon}
+      {/* 3D Emoji Icon (No background) */}
+      <div className="w-14 h-14 flex items-center justify-center shrink-0">
+        <span className="text-[40px] drop-shadow-md leading-none">{icon}</span>
       </div>
       
-      <div className="flex-1">
-        <h3 className={`text-base font-bold text-slate-800 ${checked ? 'line-through text-slate-500' : ''}`}>
+      <div className="flex-1 min-w-0 pr-2">
+        <h3 className={`text-[15px] font-extrabold text-[#1e293b] truncate ${checked ? 'text-slate-500' : ''}`}>
           {title}
         </h3>
-        <p className="text-xs text-slate-400 mt-0.5">{desc}</p>
+        <p className="text-[11px] text-slate-400 mt-0.5 font-medium truncate">{desc}</p>
         
-        <div className="flex items-center gap-2 mt-3">
-          <div className="flex items-center gap-2">
-            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${checked ? 'bg-yellow-400 border-yellow-400' : 'border-slate-300'}`}>
-              {checked && <div className="w-2.5 h-2.5 rounded-full bg-white" />}
-            </div>
-            <span className="text-xs font-bold text-slate-400">{checked ? '1/1' : '0/1'}</span>
-          </div>
+        <div className="flex items-center gap-1.5 mt-2.5">
+          {checked ? (
+             <div className="w-[18px] h-[18px] rounded-full bg-yellow-400 flex items-center justify-center shadow-inner-soft">
+               <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
+             </div>
+          ) : (
+             <div className="w-[18px] h-[18px] rounded-full border-2 border-slate-300"></div>
+          )}
+          <span className={`text-[12px] font-bold ${checked ? 'text-slate-600' : 'text-slate-400'}`}>
+            {checked ? '1 / 1' : '0 / 1'}
+          </span>
         </div>
       </div>
       
-      <div className="shrink-0 flex self-end">
-        <div className="bg-yellow-100 text-yellow-700 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1 shadow-sm">
-          <StarIcon className="w-3 h-3 fill-yellow-500 text-yellow-500" />
+      {/* XP Gel Pill */}
+      <div className="shrink-0 flex self-end mb-1">
+        <div className="gel-bar-yellow text-yellow-900 text-[11px] font-extrabold pl-1.5 pr-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md border border-yellow-300/50">
+          <div className="w-5 h-5 bg-yellow-600 rounded-full flex items-center justify-center shadow-inner">
+             <StarIcon className="w-2.5 h-2.5 fill-yellow-200 text-yellow-200" />
+          </div>
           +{xp} XP
         </div>
       </div>
