@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, CheckSquare, ShoppingBag, Book, MoreHorizontal } from "lucide-react";
+import { Home, CheckSquare, ShoppingBag, BarChart2, MoreHorizontal } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function BottomNav() {
@@ -12,7 +12,7 @@ export default function BottomNav() {
     { name: "Home", href: "/", icon: Home },
     { name: "Quests", href: "/quests", icon: CheckSquare },
     { name: "Shop", href: "/shop", icon: ShoppingBag },
-    { name: "Journal", href: "/journal", icon: Book },
+    { name: "Stats", href: "/stats", icon: BarChart2 },
     { name: "More", href: "/more", icon: MoreHorizontal },
   ];
 
