@@ -10,18 +10,20 @@ export default function Home() {
       <motion.div 
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="w-full h-[220px] rounded-[32px] overflow-hidden relative shadow-soft bg-[#dbeafe]" // A sky blue base
+        className="w-full h-[220px] rounded-[32px] overflow-hidden relative shadow-soft bg-[#dbeafe]"
       >
-        {/* Background Scenery (Sky/Castle) */}
+        {/* Full Width Castle Background */}
         <div 
           className="absolute inset-0 bg-cover bg-center z-0 opacity-90"
           style={{ backgroundImage: "url('/castle-bg.jpg')" }}
         ></div>
 
-        {/* White Text Box Overlay */}
-        <div className="absolute bottom-0 right-0 w-[55%] h-[110px] bg-white rounded-tl-[24px] pl-4 pt-4 pr-4 flex flex-col z-20 shadow-[-5px_-5px_15px_rgba(0,0,0,0.03)]">
-          <h2 className="text-[17px] font-extrabold text-slate-800 leading-tight">A Brighter You</h2>
-          <p className="text-[12px] text-slate-500 mt-1 leading-snug font-medium pr-2">
+        {/* Floating Text Box Overlay (No White Background) */}
+        <div className="absolute top-8 right-4 w-[50%] flex flex-col z-20 text-right">
+          <h2 className="text-[20px] font-extrabold text-slate-800 leading-tight drop-shadow-md bg-white/40 backdrop-blur-sm px-3 py-1 rounded-2xl inline-block self-end">
+            A Brighter You
+          </h2>
+          <p className="text-[12px] text-slate-800 mt-2 leading-snug font-bold drop-shadow-md bg-white/40 backdrop-blur-sm px-3 py-2 rounded-xl">
             "Small steps today, legendary tomorrow."
           </p>
         </div>
@@ -29,14 +31,14 @@ export default function Home() {
         {/* Avatar */}
         <div className="absolute bottom-0 left-0 w-[55%] h-full flex items-end justify-center z-30 pb-4 pl-2">
           <div className="w-[140px] h-[160px] relative">
-            {/* The Avatar Image */}
+            {/* The Avatar Image - Border Removed, Rounded corners kept for neatness */}
             <div 
-              className="w-full h-full bg-cover bg-center rounded-[28px] border-[5px] border-white shadow-sm"
+              className="w-full h-full bg-cover bg-center rounded-[28px] shadow-[0_10px_20px_rgba(0,0,0,0.15)]"
               style={{ backgroundImage: "url('/avatar.jpg')" }}
             ></div>
             
             {/* Level Badge */}
-            <div className="absolute -bottom-1 -right-2 bg-slate-800 text-yellow-400 text-xs font-black px-4 py-1.5 rounded-full border-[3px] border-yellow-500 shadow-md whitespace-nowrap">
+            <div className="absolute -bottom-1 -right-2 bg-slate-800 text-yellow-400 text-xs font-black px-4 py-1.5 rounded-full border-[3px] border-yellow-500 shadow-xl whitespace-nowrap">
               Lv. 12
             </div>
           </div>
