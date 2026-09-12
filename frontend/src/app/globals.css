@@ -27,3 +27,17 @@ body {
     box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.03);
   }
 }
+
+  .gel-bar-red {
+    background: linear-gradient(180deg, #ff7b89 0%, #fa5266 100%);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), inset 0 -2px 4px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(250, 82, 102, 0.3);
+  }
+  .gel-bar-blue {
+    background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.4), inset 0 -2px 4px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(59, 130, 246, 0.3);
+  }
+  .gel-bar-yellow {
+    background: linear-gradient(180deg, #fde047 0%, #eab308 100%);
+    box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(234, 179, 8, 0.3);
+  }
+
