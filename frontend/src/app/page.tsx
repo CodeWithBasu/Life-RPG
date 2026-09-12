@@ -70,7 +70,7 @@ export default function Home() {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.5 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-24 max-w-4xl mx-auto w-full"
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-24 max-w-5xl mx-auto w-full"
         >
           <FeatureCard 
             icon={<Sword className="w-6 h-6 text-fuchsia-400" />}
@@ -88,6 +88,45 @@ export default function Home() {
             desc="Coding builds Intellect. Gym builds Strength. Level up your real stats."
           />
         </motion.div>
+
+        {/* How It Works Section */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mt-32 max-w-4xl mx-auto text-left relative z-10 w-full bg-slate-900/50 p-8 md:p-12 rounded-3xl border border-slate-800 backdrop-blur-md"
+        >
+          <h2 className="text-3xl md:text-4xl font-bold mb-10 text-center text-slate-100">Your Journey Awaits</h2>
+          
+          <div className="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-slate-700 before:to-transparent">
+            
+            <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-950 bg-fuchsia-500 text-slate-950 font-bold shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-lg z-10">1</div>
+              <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-800 bg-slate-900/80 shadow-md">
+                <h3 className="font-bold text-slate-200 text-lg mb-1">Define Your Quests</h3>
+                <p className="text-slate-400 text-sm">Add your real-world tasks, habits, and dailies into your spellbook.</p>
+              </div>
+            </div>
+
+            <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-950 bg-indigo-500 text-slate-950 font-bold shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-lg z-10">2</div>
+              <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-800 bg-slate-900/80 shadow-md">
+                <h3 className="font-bold text-slate-200 text-lg mb-1">Execute & Survive</h3>
+                <p className="text-slate-400 text-sm">Check them off in real life to gain XP and loot. Miss them, and lose health.</p>
+              </div>
+            </div>
+
+            <div className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+              <div className="flex items-center justify-center w-10 h-10 rounded-full border-4 border-slate-950 bg-emerald-500 text-slate-950 font-bold shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 shadow-lg z-10">3</div>
+              <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] p-4 rounded-xl border border-slate-800 bg-slate-900/80 shadow-md">
+                <h3 className="font-bold text-slate-200 text-lg mb-1">Level Up Stats</h3>
+                <p className="text-slate-400 text-sm">Grow your attributes dynamically. Unlock new ranks as you progress.</p>
+              </div>
+            </div>
+
+          </div>
+        </motion.div>
       </main>
     </div>
   );
@@ -95,11 +134,11 @@ export default function Home() {
 
 function FeatureCard({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
   return (
-    <div className="flex flex-col items-center p-6 bg-slate-900/40 border border-slate-800 rounded-xl backdrop-blur-sm hover:border-slate-700 transition-colors">
-      <div className="p-3 bg-slate-800 rounded-lg mb-4">
+    <div className="flex flex-col items-center p-8 bg-slate-900/40 border border-slate-800 rounded-2xl backdrop-blur-sm hover:border-slate-700 transition-colors shadow-xl">
+      <div className="p-4 bg-slate-800/80 rounded-xl mb-5 shadow-inner">
         {icon}
       </div>
-      <h3 className="text-lg font-semibold text-slate-200 mb-2">{title}</h3>
+      <h3 className="text-xl font-bold text-slate-200 mb-3">{title}</h3>
       <p className="text-slate-400 text-sm leading-relaxed">{desc}</p>
     </div>
   );
