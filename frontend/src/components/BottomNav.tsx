@@ -27,22 +27,17 @@ export default function BottomNav() {
             <Link
               key={item.name}
               href={item.href}
-              className="relative flex flex-col items-center gap-1 w-16"
+              className={`relative flex flex-col items-center justify-center gap-1 w-[72px] h-[64px] rounded-2xl transition-all ${
+                isActive ? "bg-yellow-100" : ""
+              }`}
             >
-              {isActive && (
-                <motion.div
-                  layoutId="bottomNavIndicator"
-                  className="absolute -top-4 w-12 h-1 rounded-full bg-yellow-400"
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                />
-              )}
               <Icon 
                 className={`w-6 h-6 transition-colors ${
-                  isActive ? "text-yellow-500 fill-yellow-500/20" : "text-slate-400"
+                  isActive ? "text-yellow-600 fill-yellow-600" : "text-slate-400"
                 }`} 
               />
               <span className={`text-[10px] font-bold ${
-                isActive ? "text-yellow-600" : "text-slate-400"
+                isActive ? "text-yellow-700" : "text-slate-400"
               }`}>
                 {item.name}
               </span>
