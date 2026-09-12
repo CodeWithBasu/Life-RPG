@@ -62,7 +62,11 @@ export default function ShopPage() {
 
   return (
     <div className="flex flex-col bg-[#f8fafc] min-h-screen pb-24">
-      <div className="px-5 pt-2 pb-4 flex flex-col gap-5">
+      <div className="px-5 pt-4 pb-4 flex flex-col gap-5">
+        
+        {/* Page Title */}
+        <h1 className="text-3xl font-black text-slate-800 tracking-tight">Shop</h1>
+
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
           {["All", "Gear", "Boosts", "Cosmetics"].map((tab) => (
