@@ -1,11 +1,19 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Heart, Droplet, Star } from "lucide-react";
 import { useState } from "react";
+import LevelUpModal from "@/components/LevelUpModal";
 
 export default function QuestsPage() {
   const [activeTab, setActiveTab] = useState("Active");
+  const [showLevelUp, setShowLevelUp] = useState(false);
+
+  const mockStats = [
+    { label: "Max HP", oldValue: 100, newValue: 110, icon: <Heart className="w-5 h-5 text-red-500 fill-red-500" />, positive: true },
+    { label: "Max Mana", oldValue: 100, newValue: 110, icon: <Droplet className="w-5 h-5 text-blue-500 fill-blue-500" />, positive: true },
+    { label: "XP Gain", oldValue: "+0%", newValue: "+10%", icon: <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />, positive: true }
+  ];
   
   return (
     <div className="flex flex-col gap-5 p-5 max-w-md mx-auto pb-24">
@@ -85,6 +93,20 @@ export default function QuestsPage() {
         />
       </motion.div>
       
+      {/* Test Button for Level Up Modal */}
+      <button 
+        onClick={() => setShowLevelUp(true)}
+        className="mt-4 p-4 bg-yellow-400 font-bold text-yellow-900 rounded-2xl w-full text-center shadow-sm"
+      >
+        Simulate Level Up
+      </button>
+      
+      <LevelUpModal 
+        isOpen={showLevelUp} 
+        onClose={() => setShowLevelUp(false)} 
+        level={13} 
+        stats={mockStats} 
+      />
     </div>
   );
 }
