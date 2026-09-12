@@ -10,32 +10,35 @@ export default function Home() {
       <motion.div 
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="bg-white rounded-[36px] shadow-soft overflow-hidden relative flex flex-col"
+        className="w-full h-[200px] rounded-[32px] overflow-hidden relative shadow-soft bg-[#dbeafe]" // A sky blue base
       >
-        {/* Background Scenery (Sky & Castle representation) */}
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-sky-200 to-sky-100 z-0">
-          <div className="absolute bottom-0 right-4 w-16 h-16 bg-white/40 rounded-tl-full rounded-tr-full blur-sm"></div>
-          <div className="absolute bottom-0 right-16 w-24 h-12 bg-white/30 rounded-tl-full rounded-tr-full blur-sm"></div>
+        {/* Background Image Placeholder (Sky/Castle) */}
+        <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-sky-100 flex justify-end">
+          {/* Fake castle shape */}
+          <div className="w-1/2 h-full relative opacity-50">
+             <div className="absolute bottom-10 right-4 w-12 h-20 bg-white/40 rounded-t-lg"></div>
+             <div className="absolute bottom-10 right-14 w-8 h-24 bg-white/40 rounded-t-lg"></div>
+          </div>
         </div>
 
-        <div className="relative z-10 flex pt-6 pb-4 px-4 h-[180px]">
-          {/* Avatar Area */}
-          <div className="relative w-[130px] h-[140px] shrink-0 self-end -mb-4">
-            <div className="w-full h-full bg-slate-200 rounded-[28px] overflow-hidden border-4 border-white shadow-sm relative flex items-end justify-center pb-2 bg-gradient-to-t from-slate-300 to-slate-100">
-              <span className="text-7xl">🧑‍🚀</span>
-            </div>
+        {/* White Text Box Overlay */}
+        <div className="absolute bottom-0 right-0 w-[55%] h-[110px] bg-white rounded-tl-[24px] pl-4 pt-3 pr-4 flex flex-col z-20">
+          <h2 className="text-[17px] font-extrabold text-slate-800 leading-tight">A Brighter You</h2>
+          <p className="text-[12px] text-slate-500 mt-1 leading-snug font-medium pr-2">
+            "Small steps today, legendary tomorrow."
+          </p>
+        </div>
+
+        {/* Avatar */}
+        <div className="absolute bottom-0 left-0 w-[55%] h-full flex items-end justify-center z-30 pb-4 pl-2">
+          {/* Avatar Placeholder */}
+          <div className="w-32 h-40 bg-transparent flex items-end justify-center relative">
+            <span className="text-[110px] drop-shadow-xl leading-none">🧑🏻‍🚀</span>
+            
             {/* Level Badge */}
-            <div className="absolute -bottom-1 -right-2 bg-slate-800 text-yellow-400 text-xs font-black px-3 py-1 rounded-full border-[3px] border-yellow-500 shadow-md">
+            <div className="absolute bottom-2 right-0 translate-x-4 bg-slate-800 text-yellow-400 text-xs font-black px-4 py-1.5 rounded-full border-[3px] border-yellow-500 shadow-md whitespace-nowrap">
               Lv. 12
             </div>
-          </div>
-          
-          {/* Text Area */}
-          <div className="flex-1 pl-4 flex flex-col justify-center pt-8">
-            <h2 className="text-[17px] font-extrabold text-slate-800 leading-tight">A Brighter You</h2>
-            <p className="text-[11px] text-slate-500 mt-1 leading-snug font-medium">
-              "Small steps today, legendary tomorrow."
-            </p>
           </div>
         </div>
       </motion.div>
