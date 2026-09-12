@@ -5,7 +5,7 @@ import prisma from '../utils/db';
 export const getTasks = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const tasks = await prisma.task.findMany({
-      where: { userId: req.userId },
+      where: { userId: req.userId! },
       orderBy: { createdAt: 'desc' }
     });
     res.json(tasks);
@@ -40,7 +40,7 @@ export const createTask = async (req: AuthRequest, res: Response): Promise<void>
 
 export const updateTask = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { title, category, difficulty, status } = req.body;
 
     const existingTask = await prisma.task.findUnique({ where: { id } });
@@ -48,7 +48,7 @@ export const updateTask = async (req: AuthRequest, res: Response): Promise<void>
       res.status(404).json({ error: 'Task not found' });
       return;
     }
-    if (existingTask.userId !== req.userId) {
+    if (existingTask.userId !== req.userId!) {
       res.status(403).json({ error: 'Unauthorized' });
       return;
     }
@@ -66,14 +66,14 @@ export const updateTask = async (req: AuthRequest, res: Response): Promise<void>
 
 export const deleteTask = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     const existingTask = await prisma.task.findUnique({ where: { id } });
     if (!existingTask) {
       res.status(404).json({ error: 'Task not found' });
       return;
     }
-    if (existingTask.userId !== req.userId) {
+    if (existingTask.userId !== req.userId!) {
       res.status(403).json({ error: 'Unauthorized' });
       return;
     }
@@ -87,14 +87,14 @@ export const deleteTask = async (req: AuthRequest, res: Response): Promise<void>
 
 export const completeTask = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     const result = await prisma.$transaction(async (tx) => {
       const task = await tx.task.findUnique({ where: { id } });
       if (!task) {
         throw new Error('Task not found');
       }
-      if (task.userId !== req.userId) {
+      if (task.userId !== req.userId!) {
         throw new Error('Unauthorized');
       }
       if (task.status === 'COMPLETED') {
@@ -116,7 +116,7 @@ export const completeTask = async (req: AuthRequest, res: Response): Promise<voi
       if (task.difficulty === 'HARD') earnedXp = 30;
 
       // 3. Update Character (XP & Level)
-      const character = await tx.character.findUnique({ where: { userId: req.userId } });
+      const character = await tx.character.findUnique({ where: { userId: req.userId! } });
       if (!character) {
         throw new Error('Character not found');
       }

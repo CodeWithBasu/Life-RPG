@@ -1,20 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Sword, LayoutDashboard, Target, User, Menu, X } from "lucide-react";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { Sword, LayoutDashboard, Target, User, Menu, X, LogOut } from "lucide-react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuthStore } from "@/store/authStore";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user, isAuthenticated, fetchProfile, logout } = useAuthStore();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      router.push('/login');
+    } else if (!user) {
+      fetchProfile();
+    }
+  }, [isAuthenticated, user, router, fetchProfile]);
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
 
   const navItems = [
     { name: "Overview", href: "/dashboard", icon: LayoutDashboard },
     { name: "Quests", href: "/quests", icon: Target },
     { name: "Character", href: "/profile", icon: User },
   ];
+
+  if (!isAuthenticated) {
+    return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-slate-400">Loading...</div>;
+  }
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col md:flex-row">
@@ -69,16 +89,19 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               })}
             </nav>
 
-            <div className="p-4 border-t border-slate-800">
-              <div className="flex items-center gap-3 px-4 py-2">
+            <div className="p-4 border-t border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-3 px-2 py-2">
                 <div className="w-10 h-10 rounded-full bg-indigo-500/20 border border-indigo-500/50 flex items-center justify-center text-indigo-400 font-bold">
-                  L1
+                  L{user?.character?.level || 1}
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-slate-200">Hero</div>
-                  <div className="text-xs text-slate-500">Novice Adventurer</div>
+                  <div className="text-sm font-bold text-slate-200">{user?.displayName || 'Hero'}</div>
+                  <div className="text-xs text-slate-500">Adventurer</div>
                 </div>
               </div>
+              <button onClick={handleLogout} className="text-slate-500 hover:text-red-400 p-2">
+                <LogOut className="w-5 h-5" />
+              </button>
             </div>
           </motion.div>
         )}

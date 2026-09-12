@@ -2,13 +2,30 @@
 
 import { motion } from "framer-motion";
 import { Zap, Flame, Target, Trophy } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import { useState, useEffect } from "react";
+import { api } from "@/lib/api";
 
 export default function DashboardOverview() {
-  // Mock data for display purposes
-  const level = 5;
-  const currentXp = 450;
-  const nextLevelXp = 1000;
-  const xpPercentage = (currentXp / nextLevelXp) * 100;
+  const { user } = useAuthStore();
+  const [recentQuests, setRecentQuests] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      api.get<any[]>('/tasks').then(tasks => {
+        setRecentQuests(tasks.slice(0, 3));
+      }).catch(console.error);
+    }
+  }, [user]);
+
+  const character = user?.character;
+  const streaks = character?.streaks;
+  const attributes = character?.attributes || [];
+
+  const level = character?.level || 1;
+  const currentXp = character?.currentXp || 0;
+  const nextLevelXp = character?.xpToNextLevel || 100;
+  const xpPercentage = Math.min((currentXp / nextLevelXp) * 100, 100);
 
   const container = {
     hidden: { opacity: 0 },
@@ -18,7 +35,7 @@ export default function DashboardOverview() {
     }
   };
 
-  const item = {
+  const item: any = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 300, damping: 24 } }
   };
@@ -70,10 +87,10 @@ export default function DashboardOverview() {
 
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard icon={<Flame className="text-orange-500" />} title="Day Streak" value="7" variants={item} />
-        <StatCard icon={<Target className="text-emerald-500" />} title="Quests Done" value="24" variants={item} />
-        <StatCard icon={<Zap className="text-yellow-500" />} title="Energy Level" value="High" variants={item} />
-        <StatCard icon={<Trophy className="text-amber-400" />} title="Total Coins" value="1,250" variants={item} />
+        <StatCard icon={<Flame className="text-orange-500" />} title="Day Streak" value={streaks?.currentStreak?.toString() || "0"} variants={item} />
+        <StatCard icon={<Target className="text-emerald-500" />} title="Quests Done" value="-" variants={item} />
+        <StatCard icon={<Zap className="text-yellow-500" />} title="Max Streak" value={streaks?.longestStreak?.toString() || "0"} variants={item} />
+        <StatCard icon={<Trophy className="text-amber-400" />} title="Coins" value={character?.currencyBalance?.toString() || "0"} variants={item} />
       </div>
 
       {/* Attributes & Recent Quests Area */}
@@ -83,10 +100,16 @@ export default function DashboardOverview() {
             <Zap className="w-5 h-5 text-indigo-400" /> Attributes
           </h3>
           <div className="space-y-4">
-            <AttributeBar name="Strength" level={4} color="bg-red-500" />
-            <AttributeBar name="Intellect" level={7} color="bg-blue-500" />
-            <AttributeBar name="Discipline" level={5} color="bg-emerald-500" />
-            <AttributeBar name="Charisma" level={2} color="bg-amber-500" />
+            {attributes.length > 0 ? attributes.map((attr: any) => {
+              const colors = {
+                Intellect: "bg-blue-500",
+                Strength: "bg-red-500",
+                Discipline: "bg-emerald-500"
+              } as Record<string, string>;
+              return <AttributeBar key={attr.id} name={attr.name} level={attr.value} color={colors[attr.name] || "bg-fuchsia-500"} />
+            }) : (
+              <div className="text-slate-500 text-sm">Complete quests to build attributes.</div>
+            )}
           </div>
         </motion.div>
 
@@ -97,27 +120,27 @@ export default function DashboardOverview() {
             </h3>
           </div>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-slate-950/50 rounded-xl border border-slate-800/50">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold">✓</div>
-                <span className="text-slate-300 font-medium">Read 20 pages</span>
+            {recentQuests.length > 0 ? recentQuests.map((quest) => (
+              <div key={quest.id} className="flex items-center justify-between p-3 bg-slate-950/50 rounded-xl border border-slate-800/50">
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold ${
+                    quest.status === 'COMPLETED' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-slate-800 text-slate-500'
+                  }`}>
+                    {quest.status === 'COMPLETED' ? '✓' : '-'}
+                  </div>
+                  <span className={`font-medium ${quest.status === 'COMPLETED' ? 'text-slate-500 line-through' : 'text-slate-300'}`}>
+                    {quest.title}
+                  </span>
+                </div>
+                {quest.status === 'COMPLETED' && (
+                  <span className="text-xs font-bold text-fuchsia-400">
+                    +{quest.difficulty === 'HARD' ? 30 : quest.difficulty === 'MEDIUM' ? 20 : 10} XP
+                  </span>
+                )}
               </div>
-              <span className="text-xs font-bold text-fuchsia-400">+20 XP</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-slate-950/50 rounded-xl border border-slate-800/50">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold">✓</div>
-                <span className="text-slate-300 font-medium">1 Hour Workout</span>
-              </div>
-              <span className="text-xs font-bold text-fuchsia-400">+50 XP</span>
-            </div>
-            <div className="flex items-center justify-between p-3 bg-slate-950/50 rounded-xl border border-slate-800/50">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-slate-800 text-slate-500 flex items-center justify-center font-bold">?</div>
-                <span className="text-slate-400 font-medium line-through">Drink 2L Water</span>
-              </div>
-              <span className="text-xs font-bold text-slate-600">Missed</span>
-            </div>
+            )) : (
+              <div className="text-slate-500 text-sm p-3">No recent quests found.</div>
+            )}
           </div>
         </motion.div>
       </div>

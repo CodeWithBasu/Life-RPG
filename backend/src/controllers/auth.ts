@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { AuthRequest } from '../middleware/auth';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../utils/db';
@@ -74,6 +75,40 @@ export const login = async (req: Request, res: Response): Promise<void> => {
 
     const token = jwt.sign({ id: user.id }, JWT_SECRET, { expiresIn: '7d' });
     res.status(200).json({ token, user: { id: user.id, email: user.email, displayName: user.displayName } });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+export const getMe = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const userId = req.userId;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId! },
+      include: {
+        character: {
+          include: {
+            attributes: true,
+            streaks: true,
+          }
+        }
+      }
+    });
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    // Omit passwordHash before sending
+    const { passwordHash, ...safeUser } = user;
+    res.json(safeUser);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
