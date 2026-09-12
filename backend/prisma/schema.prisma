@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  passwordHash String
+  displayName  String
+  createdAt    DateTime    @default(now())
+  
+  character    Character?
+  tasks        Task[]
+}
+
+model Character {
+  id              String         @id @default(uuid())
+  userId          String         @unique
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level           Int            @default(1)
+  currentXp       Int            @default(0)
+  xpToNextLevel   Int            @default(100)
+  currencyBalance Int            @default(0)
+  
+  attributes      Attribute[]
+  streaks         Streak?
+  transactions    Transaction[]
+}
+
+model Attribute {
+  id          String    @id @default(uuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  name        String    // e.g., "Intellect", "Strength"
+  value       Int       @default(1)
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  category    String    // maps to Attribute.name
+  status      String    @default("TODO") // TODO, COMPLETED
+  difficulty  String    @default("EASY") // EASY, MEDIUM, HARD
+  createdAt   DateTime  @default(now())
+  completedAt DateTime?
+}
+
+model Streak {
+  id                 String    @id @default(uuid())
+  characterId        String    @unique
+  character          Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  currentStreak      Int       @default(0)
+  longestStreak      Int       @default(0)
+  lastActivityDate   DateTime?
+}
+
+model Transaction {
+  id          String    @id @default(uuid())
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  type        String    // EARN, SPEND
+  amount      Int
+  reason      String
+  createdAt   DateTime  @default(now())
+}
