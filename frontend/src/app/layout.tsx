@@ -1,23 +1,17 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Nunito } from "next/font/google";
 import "./globals.css";
 
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import TopBar from "@/components/TopBar";
+import BottomNav from "@/components/BottomNav";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "Life RPG - Level Up Your Life",
-  description: "Turn your habits into epic quests.",
+export const metadata = {
+  title: "Life RPG - A Brighter You",
+  description: "Level up real life.",
 };
 
 export default function RootLayout({
@@ -26,13 +20,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        <Navbar />
-        {children}
-        <Footer />
+    <html lang="en">
+      <body className={`${nunito.variable} antialiased bg-slate-100 flex justify-center`}>
+        {/* Mobile Wrapper */}
+        <div className="w-full max-w-md bg-slate-50 min-h-screen relative shadow-2xl overflow-hidden pb-24">
+          <TopBar />
+          <main>{children}</main>
+          <BottomNav />
+        </div>
       </body>
     </html>
   );
