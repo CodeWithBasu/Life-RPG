@@ -13,13 +13,10 @@ export default function Home() {
         className="w-full h-[220px] rounded-[32px] overflow-hidden relative shadow-soft bg-[#dbeafe]" // A sky blue base
       >
         {/* Background Scenery (Sky/Castle) */}
-        <div className="absolute inset-0 bg-gradient-to-b from-sky-300 to-sky-100 flex justify-end">
-          {/* Fake castle shape */}
-          <div className="w-1/2 h-full relative opacity-50">
-             <div className="absolute bottom-10 right-4 w-12 h-20 bg-white/40 rounded-t-lg"></div>
-             <div className="absolute bottom-10 right-14 w-8 h-24 bg-white/40 rounded-t-lg"></div>
-          </div>
-        </div>
+        <div 
+          className="absolute inset-0 bg-cover bg-center z-0 opacity-90"
+          style={{ backgroundImage: "url('/castle-bg.jpg')" }}
+        ></div>
 
         {/* White Text Box Overlay */}
         <div className="absolute bottom-0 right-0 w-[55%] h-[110px] bg-white rounded-tl-[24px] pl-4 pt-4 pr-4 flex flex-col z-20 shadow-[-5px_-5px_15px_rgba(0,0,0,0.03)]">
