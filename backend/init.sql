@@ -1,0 +1,70 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+CREATE TABLE IF NOT EXISTS "User" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    email VARCHAR(255) UNIQUE NOT NULL,
+    "passwordHash" VARCHAR(255) NOT NULL,
+    "displayName" VARCHAR(255) NOT NULL,
+    "avatarUrl" TEXT,
+    "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS "Character" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "userId" UUID UNIQUE NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
+    level INTEGER DEFAULT 1,
+    "currentXp" INTEGER DEFAULT 0,
+    "currencyBalance" INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS "Attribute" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "characterId" UUID NOT NULL REFERENCES "Character"(id) ON DELETE CASCADE,
+    name VARCHAR(50) NOT NULL,
+    value INTEGER DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS "Task" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "userId" UUID NOT NULL REFERENCES "User"(id) ON DELETE CASCADE,
+    title VARCHAR(140) NOT NULL,
+    icon VARCHAR(50),
+    "flavorText" TEXT,
+    category VARCHAR(50) NOT NULL,
+    difficulty VARCHAR(50) NOT NULL,
+    status VARCHAR(50) DEFAULT 'ACTIVE',
+    "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    "completedAt" TIMESTAMP WITH TIME ZONE,
+    "reminderTime" TIMESTAMP WITH TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS "Streak" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "characterId" UUID UNIQUE NOT NULL REFERENCES "Character"(id) ON DELETE CASCADE,
+    "currentStreak" INTEGER DEFAULT 0,
+    "longestStreak" INTEGER DEFAULT 0,
+    "lastActivityDate" TIMESTAMP WITH TIME ZONE
+);
+
+CREATE TABLE IF NOT EXISTS "ShopItem" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    cost INTEGER NOT NULL,
+    type VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS "Inventory" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "characterId" UUID NOT NULL REFERENCES "Character"(id) ON DELETE CASCADE,
+    "shopItemId" UUID NOT NULL REFERENCES "ShopItem"(id) ON DELETE CASCADE,
+    "acquiredAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS "Transaction" (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "characterId" UUID NOT NULL REFERENCES "Character"(id) ON DELETE CASCADE,
+    type VARCHAR(50) NOT NULL,
+    amount INTEGER NOT NULL,
+    reason TEXT NOT NULL,
+    "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);

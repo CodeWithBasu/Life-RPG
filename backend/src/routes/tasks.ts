@@ -9,6 +9,7 @@ import {
   completeTask,
   deleteTask,
   classify,
+  editTask,
 } from '../controllers/tasks';
 
 const router = Router();
@@ -25,6 +26,7 @@ const createTaskSchema = z.object({
   }),
   flavorText: z.string().max(200).optional(),
   icon: z.string().max(50).optional(),
+  reminderTime: z.string().optional(),
 });
 
 const classifySchema = z.object({
@@ -33,6 +35,7 @@ const classifySchema = z.object({
 
 router.get('/', getTasks);
 router.post('/', validateBody(createTaskSchema), createTask);
+router.patch('/:id', validateObjectIdParam('id'), editTask);
 router.post('/classify', validateBody(classifySchema), classify);
 router.patch('/:id/complete', validateObjectIdParam('id'), completeTask);
 router.delete('/:id', validateObjectIdParam('id'), deleteTask);
