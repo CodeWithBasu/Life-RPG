@@ -1,0 +1,124 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TaskCategory {
+  INTELLECT
+  STRENGTH
+  DISCIPLINE
+  CREATIVITY
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+  EPIC
+}
+
+enum TaskStatus {
+  ACTIVE
+  COMPLETED
+}
+
+enum TransactionType {
+  EARN
+  SPEND
+}
+
+enum ShopItemType {
+  THEME
+  FRAME
+  TITLE
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  passwordHash String
+  displayName  String
+  avatarUrl    String?
+  createdAt    DateTime    @default(now())
+
+  character    Character?
+  tasks        Task[]
+}
+
+model Character {
+  id              String        @id @default(uuid())
+  userId          String        @unique
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level           Int           @default(1)
+  currentXp       Int           @default(0)
+  currencyBalance Int           @default(0)
+
+  attributes      Attribute[]
+  streak          Streak?
+  transactions    Transaction[]
+  inventory       Inventory[]
+}
+
+model Attribute {
+  id          String       @id @default(uuid())
+  characterId String
+  character   Character    @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  name        TaskCategory
+  value       Int          @default(0)
+}
+
+model Task {
+  id           String       @id @default(uuid())
+  userId       String
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  icon         String?
+  flavorText   String?
+  category     TaskCategory
+  difficulty   Difficulty
+  status       TaskStatus   @default(ACTIVE)
+  createdAt    DateTime     @default(now())
+  completedAt  DateTime?
+  reminderTime DateTime?
+}
+
+model Streak {
+  id               String     @id @default(uuid())
+  characterId      String     @unique
+  character        Character  @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  currentStreak    Int        @default(0)
+  longestStreak    Int        @default(0)
+  lastActivityDate DateTime?
+}
+
+model Transaction {
+  id          String          @id @default(uuid())
+  characterId String
+  character   Character       @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  type        TransactionType
+  amount      Int
+  reason      String
+  createdAt   DateTime        @default(now())
+}
+
+model ShopItem {
+  id          String        @id @default(uuid())
+  name        String
+  cost        Int
+  type        ShopItemType
+
+  inventory   Inventory[]
+}
+
+model Inventory {
+  id          String     @id @default(uuid())
+  characterId String
+  character   Character  @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  shopItemId  String
+  shopItem    ShopItem   @relation(fields: [shopItemId], references: [id], onDelete: Cascade)
+  acquiredAt  DateTime   @default(now())
+}
