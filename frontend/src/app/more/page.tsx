@@ -177,13 +177,14 @@ export default function MorePage() {
       <AnimatePresence>
         {/* Full Hero Profile & Avatar Modal */}
         <AvatarPickerModal
+          key="avatar-modal"
           isOpen={activeModal === "profile" || activeModal === "avatar"}
           onClose={() => setActiveModal(null)}
         />
 
         {/* Notifications Modal */}
         {activeModal === "notifications" && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div key="notifications-modal" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -231,7 +232,7 @@ export default function MorePage() {
 
         {/* Sound Modal */}
         {activeModal === "sound" && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div key="sound-modal" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -307,7 +308,7 @@ export default function MorePage() {
 
         {/* Game Preferences Modal */}
         {activeModal === "preferences" && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div key="preferences-modal" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -352,7 +353,7 @@ export default function MorePage() {
 
         {/* Help & Lore Modal */}
         {activeModal === "help" && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div key="help-modal" className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
