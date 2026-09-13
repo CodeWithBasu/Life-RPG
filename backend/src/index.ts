@@ -53,6 +53,15 @@ app.use('/shop', shopRoutes);
 app.use('/api/ai', aiRoutes);
 app.use('/ai', aiRoutes);
 
+app.get('/', (_req: Request, res: Response) => {
+  res.json({
+    message: 'Life RPG API is running!',
+    status: 'online',
+    healthCheck: '/health',
+    endpoints: ['/api/auth', '/api/tasks', '/api/me', '/api/shop', '/api/ai'],
+  });
+});
+
 app.get('/api/health', (_req: Request, res: Response) => {
   res.json({
     status: 'ok',
