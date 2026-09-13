@@ -38,7 +38,7 @@ export default function QuestsPage() {
     <div className="flex flex-col gap-5 p-5 max-w-md mx-auto pb-24">
       
       {/* Tabs */}
-      <div className="flex items-center justify-between bg-white rounded-full p-1.5 shadow-soft">
+      <div className="flex items-center justify-between bg-white dark:bg-[#1a1740] rounded-full p-1.5 shadow-soft dark:shadow-none border border-transparent dark:border-[#2e2959]">
         {["Active", "Completed", "All"].map((tab) => (
           <button
             key={tab}
@@ -46,7 +46,7 @@ export default function QuestsPage() {
             className={`flex-1 py-2.5 text-[13px] font-bold rounded-full transition-all ${
               activeTab === tab 
                 ? "gel-bar-yellow text-yellow-900 shadow-md" 
-                : "text-slate-400 hover:text-slate-600"
+                : "text-slate-400 dark:text-indigo-300 hover:text-slate-600 dark:hover:text-indigo-200"
             }`}
           >
             {tab}
@@ -57,8 +57,8 @@ export default function QuestsPage() {
       {/* Header */}
       <div className="flex items-center justify-between px-1 mt-1">
         <div>
-          <h1 className="text-[22px] font-extrabold text-[#1e293b]">Quest Log</h1>
-          <p className="text-[13px] text-slate-500 font-medium mt-0.5">Small steps. Big adventures.</p>
+          <h1 className="text-[22px] font-extrabold text-[#1e293b] dark:text-slate-50">Quest Log</h1>
+          <p className="text-[13px] text-slate-500 dark:text-indigo-300 font-medium mt-0.5">Small steps. Big adventures.</p>
         </div>
         <button className="text-yellow-500 hover:text-yellow-600 transition-colors">
           <ChevronRight className="w-6 h-6 stroke-[3]" />
@@ -87,7 +87,7 @@ export default function QuestsPage() {
       {/* Test Button for Level Up Modal */}
       <button 
         onClick={() => setShowLevelUp(true)}
-        className="mt-4 p-4 bg-yellow-400 font-bold text-yellow-900 rounded-2xl w-full text-center shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-transform"
+        className="mt-4 p-4 bg-yellow-400 dark:bg-amber-500 font-bold text-yellow-900 dark:text-amber-950 rounded-2xl w-full text-center shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-transform"
       >
         Simulate Level Up
       </button>
@@ -107,22 +107,22 @@ function QuestCard({ iconPath, title, desc, xp, checked, onToggle }: any) {
     <motion.div 
       whileTap={{ scale: 0.98 }}
       onClick={onToggle}
-      className={`bg-white rounded-[28px] p-4 shadow-soft flex items-center gap-4 transition-opacity cursor-pointer ${checked ? 'opacity-80' : 'opacity-100'}`}
+      className={`bg-white dark:bg-[#1f1b4a] rounded-[28px] p-4 shadow-soft dark:shadow-none flex items-center gap-4 transition-opacity cursor-pointer border border-transparent dark:border-[#2e2959] ${checked ? 'opacity-80' : 'opacity-100'}`}
     >
       {/* 3D Generated Icon */}
       <div className="w-14 h-14 flex items-center justify-center shrink-0">
         <img 
           src={iconPath} 
           alt={title} 
-          className="w-14 h-14 object-contain mix-blend-multiply"
+          className="w-14 h-14 object-contain mix-blend-multiply dark:mix-blend-normal dark:opacity-90"
         />
       </div>
       
       <div className="flex-1 min-w-0 pr-2">
-        <h3 className={`text-[15px] font-extrabold text-[#1e293b] truncate ${checked ? 'text-slate-500' : ''}`}>
+        <h3 className={`text-[15px] font-extrabold text-[#1e293b] dark:text-slate-100 truncate ${checked ? 'text-slate-500 dark:text-indigo-400' : ''}`}>
           {title}
         </h3>
-        <p className="text-[11px] text-slate-400 mt-0.5 font-medium truncate">{desc}</p>
+        <p className="text-[11px] text-slate-400 dark:text-indigo-300 mt-0.5 font-medium truncate">{desc}</p>
         
         <div className="flex items-center gap-1.5 mt-2.5">
           {checked ? (
@@ -130,9 +130,9 @@ function QuestCard({ iconPath, title, desc, xp, checked, onToggle }: any) {
                <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="4"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"></path></svg>
              </div>
           ) : (
-             <div className="w-[18px] h-[18px] rounded-full border-2 border-slate-300"></div>
+             <div className="w-[18px] h-[18px] rounded-full border-2 border-slate-300 dark:border-indigo-700"></div>
           )}
-          <span className={`text-[12px] font-bold ${checked ? 'text-slate-600' : 'text-slate-400'}`}>
+          <span className={`text-[12px] font-bold ${checked ? 'text-slate-600 dark:text-indigo-300' : 'text-slate-400 dark:text-indigo-400'}`}>
             {checked ? '1 / 1' : '0 / 1'}
           </span>
         </div>

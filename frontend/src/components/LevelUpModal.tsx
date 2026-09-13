@@ -27,12 +27,12 @@ export default function LevelUpModal({ isOpen, onClose, level, stats }: LevelUpM
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="w-full max-w-[390px] max-h-[90vh] bg-white rounded-[40px] overflow-hidden relative shadow-2xl flex flex-col overflow-y-auto scrollbar-hide"
+            className="w-full max-w-[390px] max-h-[90vh] bg-white dark:bg-[#1f1b4a] rounded-[40px] overflow-hidden relative shadow-2xl flex flex-col overflow-y-auto scrollbar-hide border border-transparent dark:border-[#2e2959]"
           >
             {/* Sunburst Background */}
-            <div className="absolute inset-x-0 top-0 h-[350px] bg-[#fffcf0] overflow-hidden">
+            <div className="absolute inset-x-0 top-0 h-[350px] bg-[#fffcf0] dark:bg-[#2a2455] overflow-hidden">
               <div 
-                className="absolute inset-0 opacity-50"
+                className="absolute inset-0 opacity-50 dark:opacity-20"
                 style={{
                   background: 'repeating-conic-gradient(from 0deg, #ffe066 0deg 10deg, transparent 10deg 20deg)'
                 }}
@@ -52,7 +52,7 @@ export default function LevelUpModal({ isOpen, onClose, level, stats }: LevelUpM
                 <img 
                   src="/avatar.jpg" 
                   alt="Avatar" 
-                  className="w-full h-full object-cover rounded-full border-4 border-white shadow-xl"
+                  className="w-full h-full object-cover rounded-full border-4 border-white dark:border-[#1f1b4a] shadow-xl"
                   style={{ clipPath: 'circle(50% at 50% 50%)' }}
                 />
               </div>
@@ -63,29 +63,29 @@ export default function LevelUpModal({ isOpen, onClose, level, stats }: LevelUpM
               </h1>
               
               {/* Level Pill */}
-              <div className="bg-amber-100 border-2 border-amber-300 rounded-full px-6 py-1.5 mb-6 shadow-sm">
-                <span className="text-amber-600 font-bold text-lg">Lv. {level}</span>
+              <div className="bg-amber-100 dark:bg-amber-500/20 border-2 border-amber-300 dark:border-amber-500/50 rounded-full px-6 py-1.5 mb-6 shadow-sm">
+                <span className="text-amber-600 dark:text-amber-400 font-bold text-lg">Lv. {level}</span>
               </div>
 
               {/* Stats Card */}
-              <div className="w-full bg-[#f8fafc] rounded-3xl p-5 shadow-sm border border-slate-100 mb-4">
-                <p className="text-center text-slate-500 font-medium mb-5 text-sm">
+              <div className="w-full bg-[#f8fafc] dark:bg-[#1a1740] rounded-3xl p-5 shadow-sm border border-slate-100 dark:border-[#2e2959] mb-4">
+                <p className="text-center text-slate-500 dark:text-indigo-300 font-medium mb-5 text-sm">
                   You're becoming a brighter you!
                 </p>
 
                 <div className="space-y-4">
                   {stats.map((stat, i) => (
-                    <div key={i} className="flex items-center justify-between pb-4 border-b border-slate-100 last:border-0 last:pb-0">
+                    <div key={i} className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-[#2e2959] last:border-0 last:pb-0">
                       <div className="flex items-center gap-3">
                         <div className="flex items-center justify-center w-8 h-8">
                           {stat.icon}
                         </div>
-                        <span className="font-semibold text-slate-700 text-sm">{stat.label}</span>
+                        <span className="font-semibold text-slate-700 dark:text-slate-200 text-sm">{stat.label}</span>
                       </div>
                       <div className="flex items-center gap-2 font-bold text-sm">
-                        <span className="text-slate-600">{stat.oldValue}</span>
-                        <span className="text-slate-300">→</span>
-                        <span className={stat.positive ? "text-emerald-500" : "text-red-500"}>
+                        <span className="text-slate-600 dark:text-slate-400">{stat.oldValue}</span>
+                        <span className="text-slate-300 dark:text-indigo-700">→</span>
+                        <span className={stat.positive ? "text-emerald-500 dark:text-emerald-400" : "text-red-500 dark:text-rose-400"}>
                           {stat.newValue}
                         </span>
                       </div>
@@ -95,8 +95,8 @@ export default function LevelUpModal({ isOpen, onClose, level, stats }: LevelUpM
               </div>
 
               {/* Quote */}
-              <div className="w-full bg-[#f8fafc] rounded-2xl py-3 px-4 text-center mb-6 border border-slate-100">
-                <p className="text-slate-500 font-medium text-sm italic">
+              <div className="w-full bg-[#f8fafc] dark:bg-[#1a1740] rounded-2xl py-3 px-4 text-center mb-6 border border-slate-100 dark:border-[#2e2959]">
+                <p className="text-slate-500 dark:text-indigo-300 font-medium text-sm italic">
                   "Progress looks good on you."
                 </p>
               </div>

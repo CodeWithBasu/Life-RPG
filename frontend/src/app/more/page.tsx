@@ -17,8 +17,8 @@ export default function MorePage() {
       
       {/* Header */}
       <div className="px-2 mt-2">
-        <h1 className="text-[24px] font-extrabold text-slate-800">Settings & More</h1>
-        <p className="text-[13px] text-slate-500 font-medium">Manage your adventure.</p>
+        <h1 className="text-[24px] font-extrabold text-slate-800 dark:text-slate-50">Settings & More</h1>
+        <p className="text-[13px] text-slate-500 dark:text-indigo-300 font-medium">Manage your adventure.</p>
       </div>
 
       {/* Profile Summary */}
@@ -27,16 +27,16 @@ export default function MorePage() {
         animate={{ scale: 1, opacity: 1 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => showToast("Opening Profile Editor...")}
-        className="bg-white rounded-[32px] p-5 shadow-soft flex items-center gap-4 cursor-pointer"
+        className="bg-white dark:bg-[#1f1b4a] rounded-[32px] p-5 shadow-soft dark:shadow-none flex items-center gap-4 cursor-pointer border border-transparent dark:border-[#2e2959]"
       >
-        <div className="w-16 h-16 rounded-full overflow-hidden border-[3px] border-slate-100 shadow-sm shrink-0 bg-slate-100">
+        <div className="w-16 h-16 rounded-full overflow-hidden border-[3px] border-slate-100 dark:border-[#13112a] shadow-sm shrink-0 bg-slate-100 dark:bg-[#13112a]">
            <img src="/avatar.jpg" alt="Avatar" className="w-full h-full object-cover" />
         </div>
         <div className="flex-1">
-          <h2 className="text-[18px] font-extrabold text-slate-800 leading-tight">Basudev</h2>
-          <p className="text-[12px] font-bold text-slate-400 mt-0.5">basudev@adventurer.com</p>
+          <h2 className="text-[18px] font-extrabold text-slate-800 dark:text-slate-100 leading-tight">Basudev</h2>
+          <p className="text-[12px] font-bold text-slate-400 dark:text-indigo-300 mt-0.5">basudev@adventurer.com</p>
         </div>
-        <button className="bg-slate-100 p-2 rounded-full text-slate-400">
+        <button className="bg-slate-100 dark:bg-[#13112a] p-2 rounded-full text-slate-400 dark:text-indigo-300">
           <ChevronRight className="w-5 h-5" />
         </button>
       </motion.div>
@@ -95,7 +95,7 @@ export default function MorePage() {
           <LogOut className="w-5 h-5" />
           <span className="font-extrabold text-[16px]">Log Out</span>
         </motion.button>
-        <p className="text-center text-[11px] font-bold text-slate-400 mt-5">Life RPG v1.0.0</p>
+        <p className="text-center text-[11px] font-bold text-slate-400 dark:text-indigo-400 mt-5">Life RPG v1.0.0</p>
       </motion.div>
 
       {/* Custom Toast Notification */}
@@ -122,16 +122,16 @@ function MenuRow({ iconPath, title, subtitle, onClick }: any) {
     <motion.div 
       whileTap={{ scale: 0.96 }}
       onClick={onClick}
-      className="bg-white rounded-[24px] p-3 shadow-soft flex items-center gap-4 cursor-pointer hover:bg-slate-50 transition-colors"
+      className="bg-white dark:bg-[#1f1b4a] rounded-[24px] p-3 shadow-soft dark:shadow-none border border-transparent dark:border-[#2e2959] flex items-center gap-4 cursor-pointer hover:bg-slate-50 dark:hover:bg-[#2d285c] transition-colors"
     >
       <div className="w-14 h-14 flex items-center justify-center shrink-0">
-        <img src={iconPath} className="w-full h-full object-contain mix-blend-multiply" alt={title} />
+        <img src={iconPath} className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal dark:opacity-90" alt={title} />
       </div>
       <div className="flex-1">
-        <h3 className="text-[15px] font-extrabold text-slate-800 leading-tight">{title}</h3>
-        <p className="text-[11px] font-bold text-slate-400 mt-0.5">{subtitle}</p>
+        <h3 className="text-[15px] font-extrabold text-slate-800 dark:text-slate-100 leading-tight">{title}</h3>
+        <p className="text-[11px] font-bold text-slate-400 dark:text-indigo-300 mt-0.5">{subtitle}</p>
       </div>
-      <ChevronRight className="w-5 h-5 text-slate-300 mr-2" />
+      <ChevronRight className="w-5 h-5 text-slate-300 dark:text-indigo-400 mr-2" />
     </motion.div>
   );
 }

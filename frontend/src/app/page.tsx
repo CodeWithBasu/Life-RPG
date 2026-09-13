@@ -20,11 +20,11 @@ export default function Home() {
 
         {/* Floating Text Box Overlay (No White Background) */}
         <div className="absolute top-8 right-4 w-[50%] flex flex-col z-20 text-right">
-          <h2 className="text-[20px] font-extrabold text-slate-800 leading-tight drop-shadow-md bg-white/40 backdrop-blur-sm px-3 py-1 rounded-2xl inline-block self-end">
+          <h2 className="text-[20px] font-extrabold text-slate-800 dark:text-slate-100 leading-tight drop-shadow-md bg-white/40 dark:bg-black/50 backdrop-blur-sm px-3 py-1 rounded-2xl inline-block self-end">
             A Brighter You
           </h2>
-          <p className="text-[12px] text-slate-800 mt-2 leading-snug font-bold drop-shadow-md bg-white/40 backdrop-blur-sm px-3 py-2 rounded-xl">
-            "Small steps today, legendary tomorrow."
+          <p className="text-[12px] text-slate-800 dark:text-slate-200 mt-2 leading-snug font-bold drop-shadow-md bg-white/40 dark:bg-black/50 backdrop-blur-sm px-3 py-2 rounded-xl">
+            "Consistent today, legendary tomorrow."
           </p>
         </div>
 
@@ -50,17 +50,17 @@ export default function Home() {
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.1 }}
-        className="bg-white rounded-[32px] p-5 shadow-soft flex flex-col gap-5"
+        className="bg-white dark:bg-[#1f1b4a] rounded-[32px] p-5 shadow-soft dark:shadow-none flex flex-col gap-5 border border-transparent dark:border-[#2e2959]"
       >
         <ProgressBar icon="❤️" label="HP" colorClass="gel-bar-red" current={70} max={100} />
         
         {/* Divider */}
-        <div className="h-px w-full bg-slate-100"></div>
+        <div className="h-px w-full bg-slate-100 dark:bg-[#2e2959]"></div>
         
         <ProgressBar icon="💧" label="Mana" colorClass="gel-bar-blue" current={60} max={100} />
         
         {/* Divider */}
-        <div className="h-px w-full bg-slate-100"></div>
+        <div className="h-px w-full bg-slate-100 dark:bg-[#2e2959]"></div>
         
         <ProgressBar icon="⭐" label="Mastery XP" colorClass="gel-bar-yellow" current={320} max={500} />
       </motion.div>
@@ -70,7 +70,7 @@ export default function Home() {
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="bg-white rounded-[32px] p-4 shadow-soft grid grid-cols-3 divide-x divide-slate-100"
+        className="bg-white dark:bg-[#1f1b4a] rounded-[32px] p-4 shadow-soft dark:shadow-none grid grid-cols-3 divide-x divide-slate-100 dark:divide-[#2e2959] border border-transparent dark:border-[#2e2959]"
       >
         <AttributeItem icon="🗡️" label="Discipline" />
         <AttributeItem icon="🍃" label="Growth" />
@@ -82,12 +82,12 @@ export default function Home() {
         initial={{ y: 10, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.3 }}
-        className="bg-white rounded-[28px] p-5 shadow-soft flex gap-4 items-center"
+        className="bg-white dark:bg-[#1f1b4a] rounded-[28px] p-5 shadow-soft dark:shadow-none flex gap-4 items-center border border-transparent dark:border-[#2e2959]"
       >
         <div className="text-3xl shrink-0 drop-shadow-sm">☀️</div>
         <div>
-          <h3 className="text-[15px] font-bold text-slate-800">Today's Focus</h3>
-          <p className="text-[13px] text-slate-500 mt-0.5">Show up. You've got this.</p>
+          <h3 className="text-[15px] font-bold text-slate-800 dark:text-amber-50">Today's Focus</h3>
+          <p className="text-[13px] text-slate-500 dark:text-indigo-300 mt-0.5">Show up. You've got this.</p>
         </div>
       </motion.div>
 
@@ -100,9 +100,9 @@ function ProgressBar({ icon, label, colorClass, current, max }: any) {
   return (
     <div className="flex items-center gap-3">
       <div className="text-2xl shrink-0 drop-shadow-sm">{icon}</div>
-      <span className="text-sm font-bold text-slate-700 w-[72px] shrink-0">{label}</span>
+      <span className="text-sm font-bold text-slate-700 dark:text-amber-50 w-[72px] shrink-0">{label}</span>
       
-      <div className="flex-1 h-5 bg-slate-100/80 rounded-full overflow-hidden shadow-inner-soft p-0.5 flex">
+      <div className="flex-1 h-5 bg-slate-100/80 dark:bg-black/40 rounded-full overflow-hidden shadow-inner-soft dark:shadow-none p-0.5 flex">
         <motion.div 
           initial={{ width: 0 }}
           animate={{ width: `${percent}%` }}
@@ -111,7 +111,7 @@ function ProgressBar({ icon, label, colorClass, current, max }: any) {
         />
       </div>
       
-      <span className="text-xs font-bold text-slate-500 w-[60px] text-right shrink-0">{current} / {max}</span>
+      <span className="text-xs font-bold text-slate-500 dark:text-indigo-300 w-[60px] text-right shrink-0">{current} / {max}</span>
     </div>
   );
 }
@@ -122,7 +122,7 @@ function AttributeItem({ icon, label }: any) {
       <div className="text-3xl drop-shadow-md">
         {icon}
       </div>
-      <span className="text-[12px] font-bold text-slate-800 capitalize">{label}</span>
+      <span className="text-[12px] font-bold text-slate-800 dark:text-indigo-200 capitalize">{label}</span>
     </div>
   );
 }

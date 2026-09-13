@@ -69,11 +69,11 @@ export default function ShopPage() {
   };
 
   return (
-    <div className="flex flex-col bg-[#f8fafc] min-h-screen pb-24">
+    <div className="flex flex-col bg-[#f8fafc] dark:bg-transparent min-h-screen pb-24">
       <div className="px-5 pt-4 pb-4 flex flex-col gap-5">
         
         {/* Page Title */}
-        <h1 className="text-3xl font-black text-slate-800 tracking-tight">Shop</h1>
+        <h1 className="text-3xl font-black text-slate-800 dark:text-slate-50 tracking-tight">Shop</h1>
 
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
@@ -84,7 +84,7 @@ export default function ShopPage() {
               className={`whitespace-nowrap px-6 py-2.5 text-sm font-extrabold rounded-full transition-all ${
                 activeTab === tab 
                   ? "bg-gradient-to-b from-amber-300 to-amber-400 text-amber-900 shadow-[0_4px_0_#d97706] -translate-y-1" 
-                  : "bg-white text-slate-500 shadow-sm border border-slate-100 hover:bg-slate-50"
+                  : "bg-white dark:bg-[#1a1740] text-slate-500 dark:text-indigo-300 shadow-sm border border-slate-100 dark:border-[#2e2959] hover:bg-slate-50 dark:hover:bg-[#1f1b4a]"
               }`}
             >
               {tab}
@@ -96,15 +96,15 @@ export default function ShopPage() {
         <motion.div 
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full relative h-48 rounded-[32px] overflow-hidden shadow-md group"
+          className="w-full relative h-48 rounded-[32px] overflow-hidden shadow-md group border border-transparent dark:border-[#2e2959]"
         >
-          <img src="/shop_banner.jpg" alt="Village" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-white/40 to-white/90" />
+          <img src="/shop_banner.jpg" alt="Village" className="w-full h-full object-cover opacity-90" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white/40 dark:from-indigo-950/70 to-white/90 dark:to-indigo-900/80" />
           <div className="absolute inset-0 flex flex-col items-center justify-start pt-6 text-center">
-            <h2 className="text-2xl font-black text-indigo-900 leading-tight">
+            <h2 className="text-2xl font-black text-indigo-900 dark:text-white leading-tight drop-shadow-sm">
               Better Habits<br />Better Adventures
             </h2>
-            <p className="text-indigo-700/80 font-bold text-sm mt-2">
+            <p className="text-indigo-700/80 dark:text-indigo-200 font-bold text-sm mt-2">
               Invest in the you<br />you're becoming.
             </p>
           </div>
@@ -126,21 +126,21 @@ export default function ShopPage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white rounded-[28px] p-4 flex flex-col items-center shadow-soft border border-slate-50 hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-[#1f1b4a] rounded-[28px] p-4 flex flex-col items-center shadow-soft dark:shadow-none border border-slate-50 dark:border-[#2e2959] hover:shadow-md transition-shadow"
               >
                 <div className="w-24 h-24 mb-3 flex items-center justify-center">
-                  <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
+                  <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal dark:opacity-90" />
                 </div>
-                <h3 className="text-sm font-black text-slate-800 text-center leading-tight mb-1">
+                <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 text-center leading-tight mb-1">
                   {item.name}
                 </h3>
-                <p className="text-[11px] font-bold text-slate-400 mb-4 text-center">
+                <p className="text-[11px] font-bold text-slate-400 dark:text-indigo-300 mb-4 text-center">
                   {item.boost}
                 </p>
                 
                 <button 
                   onClick={() => handlePurchase(item.id)}
-                  className={`mt-auto w-full text-sm font-extrabold py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors border ${isPurchased ? 'bg-slate-100 text-slate-400 border-slate-200' : 'bg-amber-100/50 hover:bg-amber-100 text-amber-900 border-amber-200/50'}`}
+                  className={`mt-auto w-full text-sm font-extrabold py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors border ${isPurchased ? 'bg-slate-100 dark:bg-indigo-900/40 text-slate-400 dark:text-indigo-400 border-slate-200 dark:border-indigo-800/50' : 'bg-amber-100/50 dark:bg-[#2d285c] hover:bg-amber-100 dark:hover:bg-[#3d377c] text-amber-900 dark:text-amber-400 border-amber-200/50 dark:border-[#4d459c]'}`}
                 >
                   {isPurchased ? (
                     "Purchased"
