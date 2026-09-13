@@ -2,7 +2,6 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { signup, login, refresh, logout } from '../controllers/auth';
 import { validateBody } from '../middleware/validate';
-import { authRateLimiter } from '../middleware/rateLimit';
 
 const router = Router();
 
@@ -17,8 +16,8 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
-router.post('/signup', authRateLimiter, validateBody(signupSchema), signup);
-router.post('/login', authRateLimiter, validateBody(loginSchema), login);
+router.post('/signup', validateBody(signupSchema), signup);
+router.post('/login', validateBody(loginSchema), login);
 router.post('/refresh', refresh);
 router.post('/logout', logout);
 
