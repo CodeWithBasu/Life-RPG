@@ -4,36 +4,36 @@ const prisma = new PrismaClient();
 
 const SAMPLE_SHOP_ITEMS = [
   {
-    name: "Traveler's Cloak",
-    cost: 500,
-    type: 'FRAME',
-  },
-  {
-    name: "Focus Hood",
-    cost: 300,
-    type: 'FRAME',
-  },
-  {
-    name: "Scholar's Tome",
-    cost: 400,
+    name: 'Midnight Obsidian Theme',
+    cost: 50,
     type: 'THEME',
   },
   {
-    name: "Lantern of Clarity",
-    cost: 350,
-    type: 'FRAME',
-  },
-  {
-    name: "Lucky Charm",
-    cost: 250,
+    name: 'Golden Solar Theme',
+    cost: 75,
     type: 'THEME',
   },
   {
-    name: "Companion",
-    cost: 600,
+    name: 'Dragon Knight Frame',
+    cost: 30,
+    type: 'FRAME',
+  },
+  {
+    name: 'Arcane Scholar Frame',
+    cost: 30,
+    type: 'FRAME',
+  },
+  {
+    name: 'The Disciplined Title',
+    cost: 20,
     type: 'TITLE',
-  }
-];
+  },
+  {
+    name: 'Shadow Realm Walker Title',
+    cost: 45,
+    type: 'TITLE',
+  },
+] as const;
 
 async function seed() {
   console.log('Seeding ShopItems...');
