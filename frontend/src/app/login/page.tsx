@@ -4,14 +4,44 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Mail, Lock, EyeOff, ArrowRight } from "lucide-react";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
+import { api } from "@/lib/api";
+
 export default function LoginPage() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
+  const router = useRouter();
+  const setToken = useAuthStore((state) => state.setToken);
+  const setUser = useAuthStore((state) => state.setUser);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
+
+    try {
+      const data = await api.post<{ token: string; user: any }>('/auth/login', { email, password });
+      setToken(data.token);
+      setUser(data.user);
+      router.push('/'); // Navigate to home
+    } catch (err: any) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-[#dff2ff] to-white relative overflow-hidden dark:from-[#13112a] dark:to-[#1a1740]">
       
       {/* Background Graphic (Castle) */}
       <div 
         className="absolute top-0 inset-x-0 h-[50vh] bg-cover bg-center z-0 opacity-40 dark:opacity-20 pointer-events-none"
-        style={{ backgroundImage: "url('/castle-bg.jpg')" }}
         style={{ maskImage: "linear-gradient(to bottom, black 40%, transparent 100%)", WebkitMaskImage: "linear-gradient(to bottom, black 40%, transparent 100%)", backgroundImage: "url('/castle-bg.jpg')" }}
       ></div>
 
@@ -68,7 +98,7 @@ export default function LoginPage() {
         </p>
 
         {/* 3 Icons */}
-        <div className="flex items-center justify-center gap-6 mt-6 mb-8 w-full">
+        <div className="flex items-center justify-center gap-6 mt-6 mb-4 w-full">
           <div className="flex flex-col items-center gap-1.5 w-20">
             <span className="text-3xl drop-shadow-sm">🗡️</span>
             <span className="text-[10px] font-bold text-slate-600 dark:text-indigo-200 text-center leading-tight">Build<br/>Discipline</span>
@@ -83,8 +113,14 @@ export default function LoginPage() {
           </div>
         </div>
 
+        {error && (
+          <div className="mb-4 w-full p-3 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 dark:text-red-400 text-sm font-bold text-center">
+            {error}
+          </div>
+        )}
+
         {/* Form */}
-        <form className="w-full flex flex-col gap-3.5">
+        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-3.5">
           {/* Email */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
@@ -93,6 +129,9 @@ export default function LoginPage() {
             <input 
               type="email" 
               placeholder="Email address"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="w-full pl-12 pr-4 py-4 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] rounded-2xl text-[15px] font-bold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-amber-400/50 transition-shadow"
             />
           </div>
@@ -105,6 +144,9 @@ export default function LoginPage() {
             <input 
               type="password" 
               placeholder="Password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full pl-12 pr-12 py-4 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] rounded-2xl text-[15px] font-bold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-amber-400/50 transition-shadow"
             />
             <button type="button" className="absolute inset-y-0 right-0 pr-4 flex items-center">
@@ -126,15 +168,14 @@ export default function LoginPage() {
           </div>
 
           {/* Log In Button */}
-          <Link href="/">
-            <button 
-              type="button"
-              className="w-full bg-gradient-to-b from-amber-300 to-amber-400 text-amber-950 font-black text-[17px] py-4 rounded-2xl shadow-[0_4px_0_#d97706] hover:translate-y-[2px] hover:shadow-[0_2px_0_#d97706] transition-all active:translate-y-[4px] active:shadow-none flex items-center justify-center gap-2"
-            >
-              Log In
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </Link>
+          <button 
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-gradient-to-b from-amber-300 to-amber-400 disabled:from-amber-200 disabled:to-amber-300 text-amber-950 font-black text-[17px] py-4 rounded-2xl shadow-[0_4px_0_#d97706] disabled:shadow-none hover:translate-y-[2px] hover:shadow-[0_2px_0_#d97706] transition-all active:translate-y-[4px] active:shadow-none flex items-center justify-center gap-2"
+          >
+            {isLoading ? 'Logging in...' : 'Log In'}
+            {!isLoading && <ArrowRight className="w-5 h-5" />}
+          </button>
         </form>
 
         {/* OR Divider */}
