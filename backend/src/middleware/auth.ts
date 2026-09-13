@@ -1,25 +1,54 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-export interface AuthRequest extends Request {
+export interface AuthenticatedUser {
+  id: string;
+}
+
+export interface AuthenticatedRequest extends Request {
+  user?: AuthenticatedUser;
   userId?: string;
 }
 
-export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction): void => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-access-super-secret-key-32-chars-min';
 
-  if (!token) {
-    res.status(401).json({ error: 'Unauthorized: No token provided' });
+export const requireAuth = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+): void => {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'Authentication required' });
     return;
   }
 
-  jwt.verify(token, process.env.JWT_SECRET || 'super-secret', (err, user: any) => {
-    if (err) {
-      res.status(403).json({ error: 'Forbidden: Invalid token' });
+  const token = authHeader.split(' ')[1];
+  if (!token) {
+    res.status(401).json({ error: 'Authentication token missing' });
+    return;
+  }
+
+  try {
+    const payload = jwt.verify(token, JWT_SECRET) as unknown as { id?: string };
+    if (!payload?.id) {
+      res.status(401).json({ error: 'Invalid token payload' });
       return;
     }
-    req.userId = user.id;
+
+    req.user = { id: payload.id };
+    req.userId = payload.id;
     next();
-  });
+  } catch (error: any) {
+    if (error?.name === 'TokenExpiredError') {
+      res.status(401).json({ error: 'Access token expired', code: 'TOKEN_EXPIRED' });
+      return;
+    }
+    res.status(401).json({ error: 'Invalid or malformed token' });
+  }
 };
+
+// Backwards compatibility alias
+export const authenticateToken = requireAuth;
+export type AuthRequest = AuthenticatedRequest;

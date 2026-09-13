@@ -26,12 +26,13 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const data = await api.post<{ token: string; user: any }>('/auth/signup', { 
+      const data = await api.post<{ accessToken: string; token?: string; user: any }>('/api/auth/signup', { 
         displayName, 
         email, 
         password 
       });
-      setToken(data.token);
+      const token = data.accessToken || data.token || '';
+      setToken(token);
       setUser(data.user);
       router.push('/');
     } catch (err: any) {

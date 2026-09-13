@@ -1,11 +1,25 @@
 import { Router } from 'express';
-import { signup, login, getMe } from '../controllers/auth';
-import { authenticateToken } from '../middleware/auth';
+import { z } from 'zod';
+import { signup, login, refresh, logout } from '../controllers/auth';
+import { validateBody } from '../middleware/validate';
+import { authRateLimiter } from '../middleware/rateLimit';
 
 const router = Router();
 
-router.post('/signup', signup);
-router.post('/login', login);
-router.get('/me', authenticateToken, getMe as any);
+const signupSchema = z.object({
+  email: z.string().email('Valid email address is required'),
+  password: z.string().min(6, 'Password must be at least 6 characters'),
+  displayName: z.string().min(2, 'Display name must be at least 2 characters').max(40),
+});
+
+const loginSchema = z.object({
+  email: z.string().email('Valid email address is required'),
+  password: z.string().min(1, 'Password is required'),
+});
+
+router.post('/signup', authRateLimiter, validateBody(signupSchema), signup);
+router.post('/login', authRateLimiter, validateBody(loginSchema), login);
+router.post('/refresh', refresh);
+router.post('/logout', logout);
 
 export default router;

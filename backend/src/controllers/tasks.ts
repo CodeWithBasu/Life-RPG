@@ -1,216 +1,284 @@
 import { Response } from 'express';
-import { AuthRequest } from '../middleware/auth';
+import { TaskCategory, Difficulty, TaskStatus, TransactionType } from '@prisma/client';
+import { AuthenticatedRequest } from '../middleware/auth';
 import prisma from '../utils/db';
+import {
+  calculateStreak,
+  calculateQuestReward,
+  calculateLevelProgress,
+} from '../services/gameLogic';
+import { generateQuestFlavor, classifyTask } from '../services/llm';
 
-export const getTasks = async (req: AuthRequest, res: Response): Promise<void> => {
+export const getTasks = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Authentication required' });
+      return;
+    }
+
     const tasks = await prisma.task.findMany({
-      where: { userId: req.userId! },
-      orderBy: { createdAt: 'desc' }
+      where: { userId },
+      orderBy: { createdAt: 'desc' },
     });
+
     res.json(tasks);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch tasks' });
+    console.error('getTasks error:', error);
+    res.status(500).json({ error: 'Failed to fetch user tasks' });
   }
 };
 
-export const createTask = async (req: AuthRequest, res: Response): Promise<void> => {
+export const createTask = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const { title, category, difficulty } = req.body;
-    
-    if (!title || !category) {
-      res.status(400).json({ error: 'Title and category are required' });
+    const userId = req.user?.id;
+    if (!userId) {
+      res.status(401).json({ error: 'Authentication required' });
       return;
     }
+
+    const { title, category, difficulty, flavorText, icon } = req.body as {
+      title: string;
+      category: TaskCategory;
+      difficulty: Difficulty;
+      flavorText?: string;
+      icon?: string;
+    };
+
+    // If no custom flavorText provided, attempt dark-fantasy rewrite via LLM with safe fallback
+    const resolvedFlavorText = flavorText?.trim()
+      ? flavorText.trim()
+      : await generateQuestFlavor(title, category);
 
     const task = await prisma.task.create({
       data: {
-        userId: req.userId!,
-        title,
+        userId,
+        title: title.trim(),
+        icon: icon?.trim() || null,
+        flavorText: resolvedFlavorText,
         category,
-        difficulty: difficulty || 'EASY'
-      }
+        difficulty,
+        status: TaskStatus.ACTIVE,
+      },
     });
-    
+
     res.status(201).json(task);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create task' });
+    console.error('createTask error:', error);
+    res.status(500).json({ error: 'Failed to create quest' });
   }
 };
 
-export const updateTask = async (req: AuthRequest, res: Response): Promise<void> => {
+export const completeTask = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   try {
-    const id = req.params.id as string;
-    const { title, category, difficulty, status } = req.body;
+    const userId = req.user?.id;
+    const taskId = req.params.id as string;
 
-    const existingTask = await prisma.task.findUnique({ where: { id } });
-    if (!existingTask) {
-      res.status(404).json({ error: 'Task not found' });
-      return;
-    }
-    if (existingTask.userId !== req.userId!) {
-      res.status(403).json({ error: 'Unauthorized' });
+    if (!userId) {
+      res.status(401).json({ error: 'Authentication required' });
       return;
     }
 
-    const task = await prisma.task.update({
-      where: { id },
-      data: { title, category, difficulty, status }
+    const existingTask = await prisma.task.findUnique({
+      where: { id: taskId },
     });
 
-    res.json(task);
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to update task' });
-  }
-};
-
-export const deleteTask = async (req: AuthRequest, res: Response): Promise<void> => {
-  try {
-    const id = req.params.id as string;
-
-    const existingTask = await prisma.task.findUnique({ where: { id } });
     if (!existingTask) {
-      res.status(404).json({ error: 'Task not found' });
-      return;
-    }
-    if (existingTask.userId !== req.userId!) {
-      res.status(403).json({ error: 'Unauthorized' });
+      res.status(404).json({ error: 'Quest not found' });
       return;
     }
 
-    await prisma.task.delete({ where: { id } });
-    res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: 'Failed to delete task' });
-  }
-};
+    if (existingTask.userId !== userId) {
+      res.status(403).json({ error: 'Forbidden: You do not own this quest' });
+      return;
+    }
 
-export const completeTask = async (req: AuthRequest, res: Response): Promise<void> => {
-  try {
-    const id = req.params.id as string;
+    if (existingTask.status === TaskStatus.COMPLETED) {
+      res.status(400).json({ error: 'Quest is already completed' });
+      return;
+    }
 
-    const result = await prisma.$transaction(async (tx) => {
-      const task = await tx.task.findUnique({ where: { id } });
-      if (!task) {
-        throw new Error('Task not found');
-      }
-      if (task.userId !== req.userId!) {
-        throw new Error('Unauthorized');
-      }
-      if (task.status === 'COMPLETED') {
-        throw new Error('Task already completed');
-      }
+    const now = new Date();
 
+    const completionResult = await prisma.$transaction(async (tx) => {
       // 1. Mark task as completed
       const updatedTask = await tx.task.update({
-        where: { id },
-        data: { 
-          status: 'COMPLETED',
-          completedAt: new Date()
-        }
+        where: { id: taskId },
+        data: {
+          status: TaskStatus.COMPLETED,
+          completedAt: now,
+        },
       });
 
-      // 2. Calculate XP
-      let earnedXp = 10;
-      if (task.difficulty === 'MEDIUM') earnedXp = 20;
-      if (task.difficulty === 'HARD') earnedXp = 30;
+      // 2. Fetch Character with relations
+      const character = await tx.character.findUnique({
+        where: { userId },
+        include: {
+          streak: true,
+          attributes: true,
+        },
+      });
 
-      // 3. Update Character (XP & Level)
-      const character = await tx.character.findUnique({ where: { userId: req.userId! } });
       if (!character) {
-        throw new Error('Character not found');
+        throw new Error('Character profile not found');
       }
 
-      let { level, currentXp, xpToNextLevel } = character;
-      currentXp += earnedXp;
+      // 3. Evaluate streak (server-side UTC calculation)
+      const currentStreakVal = character.streak?.currentStreak ?? 0;
+      const longestStreakVal = character.streak?.longestStreak ?? 0;
+      const streakEval = calculateStreak(
+        character.streak?.lastActivityDate,
+        now,
+        currentStreakVal,
+        longestStreakVal
+      );
 
-      while (currentXp >= xpToNextLevel) {
-        currentXp -= xpToNextLevel;
-        level += 1;
-        xpToNextLevel = Math.floor(100 * Math.pow(level, 1.5));
+      let updatedStreak;
+      if (character.streak) {
+        updatedStreak = await tx.streak.update({
+          where: { characterId: character.id },
+          data: {
+            currentStreak: streakEval.currentStreak,
+            longestStreak: streakEval.longestStreak,
+            lastActivityDate: now,
+          },
+        });
+      } else {
+        updatedStreak = await tx.streak.create({
+          data: {
+            characterId: character.id,
+            currentStreak: streakEval.currentStreak,
+            longestStreak: streakEval.longestStreak,
+            lastActivityDate: now,
+          },
+        });
       }
 
+      // 4. Calculate XP and Currency rewards with streak bonus
+      const { xpEarned, currencyEarned, bonusMultiplier } = calculateQuestReward(
+        existingTask.difficulty,
+        streakEval.currentStreak
+      );
+
+      // 5. Calculate level-up progression
+      const levelProgression = calculateLevelProgress(
+        character.level,
+        character.currentXp,
+        xpEarned
+      );
+
+      // 6. Update Character state
       const updatedCharacter = await tx.character.update({
         where: { id: character.id },
-        data: { level, currentXp, xpToNextLevel }
-      });
-
-      // 4. Update Attribute
-      const attribute = await tx.attribute.findFirst({
-        where: { characterId: character.id, name: task.category }
-      });
-
-      if (attribute) {
-        await tx.attribute.update({
-          where: { id: attribute.id },
-          data: { value: attribute.value + 1 }
-        });
-      } else {
-        await tx.attribute.create({
-          data: {
-            characterId: character.id,
-            name: task.category,
-            value: 1
-          }
-        });
-      }
-
-      // 5. Update Streak
-      let streak = await tx.streak.findUnique({ where: { characterId: character.id } });
-      if (!streak) {
-        streak = await tx.streak.create({
-          data: {
-            characterId: character.id,
-            currentStreak: 0,
-            longestStreak: 0
-          }
-        });
-      }
-
-      const now = new Date();
-      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      let { currentStreak, longestStreak } = streak;
-
-      if (streak.lastActivityDate) {
-        const lastActivity = new Date(streak.lastActivityDate);
-        const lastActivityDay = new Date(lastActivity.getFullYear(), lastActivity.getMonth(), lastActivity.getDate());
-        
-        const diffTime = Math.abs(today.getTime() - lastActivityDay.getTime());
-        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-        
-        if (diffDays === 1) {
-          currentStreak += 1;
-          longestStreak = Math.max(longestStreak, currentStreak);
-        } else if (diffDays > 1) {
-          currentStreak = 1;
-        }
-      } else {
-        currentStreak = 1;
-        longestStreak = 1;
-      }
-
-      const updatedStreak = await tx.streak.update({
-        where: { id: streak.id },
         data: {
-          currentStreak,
-          longestStreak,
-          lastActivityDate: now
-        }
+          level: levelProgression.newLevel,
+          currentXp: levelProgression.newXp,
+          currencyBalance: character.currencyBalance + currencyEarned,
+        },
       });
 
-      return { task: updatedTask, character: updatedCharacter, streak: updatedStreak };
+      // 7. Update matching Attribute value
+      const existingAttribute = character.attributes.find(
+        (attr) => attr.name === existingTask.category
+      );
+
+      let updatedAttribute;
+      if (existingAttribute) {
+        updatedAttribute = await tx.attribute.update({
+          where: { id: existingAttribute.id },
+          data: {
+            value: existingAttribute.value + xpEarned,
+          },
+        });
+      } else {
+        updatedAttribute = await tx.attribute.create({
+          data: {
+            characterId: character.id,
+            name: existingTask.category,
+            value: xpEarned,
+          },
+        });
+      }
+
+      // 8. Record Transaction ledger entry
+      const transaction = await tx.transaction.create({
+        data: {
+          characterId: character.id,
+          type: TransactionType.EARN,
+          amount: currencyEarned,
+          reason: `Quest Completed: ${existingTask.title}`,
+        },
+      });
+
+      return {
+        task: updatedTask,
+        character: updatedCharacter,
+        attribute: updatedAttribute,
+        streak: updatedStreak,
+        transaction,
+        reward: {
+          xpEarned,
+          currencyEarned,
+          bonusMultiplier,
+        },
+        leveledUp: levelProgression.leveledUp,
+        newLevel: levelProgression.newLevel,
+      };
     });
 
-    res.json(result);
+    res.json(completionResult);
   } catch (error: any) {
-    if (error.message === 'Task not found') {
+    console.error('completeTask error:', error);
+    if (error?.message === 'Character profile not found') {
       res.status(404).json({ error: error.message });
-    } else if (error.message === 'Unauthorized') {
-      res.status(403).json({ error: error.message });
-    } else if (error.message === 'Task already completed' || error.message === 'Character not found') {
-      res.status(400).json({ error: error.message });
-    } else {
-      res.status(500).json({ error: 'Failed to complete task' });
+      return;
     }
+    res.status(500).json({ error: 'Failed to complete quest' });
+  }
+};
+
+export const deleteTask = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    const taskId = req.params.id as string;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Authentication required' });
+      return;
+    }
+
+    const existingTask = await prisma.task.findUnique({
+      where: { id: taskId },
+    });
+
+    if (!existingTask) {
+      res.status(404).json({ error: 'Quest not found' });
+      return;
+    }
+
+    if (existingTask.userId !== userId) {
+      res.status(403).json({ error: 'Forbidden: You do not own this quest' });
+      return;
+    }
+
+    await prisma.task.delete({
+      where: { id: taskId },
+    });
+
+    res.json({ success: true, message: 'Quest deleted successfully' });
+  } catch (error) {
+    console.error('deleteTask error:', error);
+    res.status(500).json({ error: 'Failed to delete quest' });
+  }
+};
+
+export const classify = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const { taskText } = req.body;
+    const result = await classifyTask(taskText);
+    res.json(result);
+  } catch (error) {
+    console.error('classify error:', error);
+    res.status(500).json({ error: 'Failed to classify task' });
   }
 };

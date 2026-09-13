@@ -24,12 +24,12 @@ export default function LoginPage() {
     e.preventDefault();
     setError('');
     setIsLoading(true);
-
     try {
-      const data = await api.post<{ token: string; user: any }>('/auth/login', { email, password });
-      setToken(data.token);
-      setUser(data.user);
-      router.push('/'); // Navigate to home
+      const data = await api.post<{ accessToken: string; token?: string; user: any }>('/api/auth/login', { email, password });
+      const token = data.accessToken || data.token || '';
+      setToken(token);
+      if (data.user) setUser(data.user);
+      router.push('/');
     } catch (err: any) {
       setError(err.message || 'Login failed');
     } finally {

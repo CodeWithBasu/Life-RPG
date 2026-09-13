@@ -1,7 +1,10 @@
 "use client";
 
+import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Heart, Droplet, Star } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import { soundEngine } from "@/lib/audio";
 
 interface StatChange {
   label: string;
@@ -19,6 +22,16 @@ interface LevelUpModalProps {
 }
 
 export default function LevelUpModal({ isOpen, onClose, level, stats }: LevelUpModalProps) {
+  const user = useAuthStore((state) => state.user);
+  const avatarUrl = user?.avatarUrl || "/avatars/paladin.jpg";
+  const isEmoji = !avatarUrl.startsWith("/") && !avatarUrl.startsWith("http");
+
+  useEffect(() => {
+    if (isOpen) {
+      soundEngine.playLevelUp();
+    }
+  }, [isOpen]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -47,14 +60,19 @@ export default function LevelUpModal({ isOpen, onClose, level, stats }: LevelUpM
             {/* Content Container */}
             <div className="relative z-10 flex flex-col items-center pt-8 pb-6 px-6 flex-1">
               
-              {/* Avatar Placeholder */}
-              <div className="w-48 h-48 mb-2 relative z-20 -mt-16">
-                <img 
-                  src="/avatar.jpg" 
-                  alt="Avatar" 
-                  className="w-full h-full object-cover rounded-full border-4 border-white dark:border-[#1f1b4a] shadow-xl"
-                  style={{ clipPath: 'circle(50% at 50% 50%)' }}
-                />
+              {/* Avatar Portrait */}
+              <div className="w-36 h-36 mb-2 relative z-20 -mt-10">
+                {isEmoji ? (
+                  <div className="w-full h-full rounded-full bg-gradient-to-br from-amber-300 to-amber-500 flex items-center justify-center text-6xl border-4 border-white dark:border-[#1f1b4a] shadow-xl">
+                    {avatarUrl}
+                  </div>
+                ) : (
+                  <img 
+                    src={avatarUrl} 
+                    alt="Avatar" 
+                    className="w-full h-full object-cover rounded-full border-4 border-white dark:border-[#1f1b4a] shadow-xl"
+                  />
+                )}
               </div>
 
               {/* LEVEL UP Title */}
