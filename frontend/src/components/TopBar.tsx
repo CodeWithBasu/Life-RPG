@@ -9,7 +9,13 @@ export default function TopBar() {
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    // Force reset if their browser cached 'system' from earlier
+    if (localStorage.getItem('theme') === 'system') {
+      setTheme('light');
+    }
+  }, [setTheme]);
 
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-[#f8fafc] dark:bg-[#13112a] relative z-50 transition-colors duration-300">
