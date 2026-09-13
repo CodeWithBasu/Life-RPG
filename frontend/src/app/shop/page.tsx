@@ -48,8 +48,9 @@ export default function ShopPage() {
         const owned = character.inventory.map((inv: any) => inv.shopItemId);
         setPurchasedIds(owned);
       }
-    } catch (err) {
-      console.error("Failed to load shop items:", err);
+    } catch (err: any) {
+      // Avoid console.error to prevent Next.js dev overlay popping up on expected auth flows
+      console.warn("Could not load shop items", err?.message || err);
     } finally {
       setIsLoading(false);
     }

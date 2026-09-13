@@ -95,8 +95,8 @@ export default function QuestsPage() {
       await ensureAuthenticated();
       const tasks = await api.get<TaskItem[]>("/api/tasks");
       setQuests(tasks);
-    } catch (err) {
-      console.error("Failed to load tasks:", err);
+    } catch (err: any) {
+      console.warn("Could not load tasks:", err?.message || err);
     } finally {
       setIsLoading(false);
     }
