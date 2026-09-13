@@ -30,6 +30,9 @@ export default function ShopPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [feedback, setFeedback] = useState<string | null>(null);
 
+  const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [customName, setCustomName] = useState("");
+
   const ensureAuthenticated = useAuthStore((state) => state.ensureAuthenticated);
   const updateCharacter = useAuthStore((state) => state.updateCharacter);
   const character = useAuthStore((state) => state.user?.character);
@@ -56,28 +59,35 @@ export default function ShopPage() {
     loadShop();
   }, []);
 
-  const handlePurchase = async (item: ShopItemModel) => {
+  const confirmPurchase = async () => {
+    if (!selectedItem) return;
+    const item = selectedItem;
+    
     if (purchasedIds.includes(item.id)) return;
 
     const currentCoins = character?.currencyBalance ?? 0;
     if (currentCoins < item.cost) {
       setFeedback(`Need ${item.cost - currentCoins} more coins to purchase ${item.name}!`);
       setTimeout(() => setFeedback(null), 3000);
+      setSelectedItem(null);
       return;
     }
 
     try {
-      const res: any = await api.post(`/api/shop/${item.id}/purchase`);
+      const res: any = await api.post(`/api/shop/${item.id}/purchase`, { customName });
       if (res.success) {
         soundEngine.playCoin();
         setPurchasedIds((prev) => [...prev, item.id]);
         updateCharacter({ currencyBalance: res.newBalance });
-        setFeedback(`Equipped ${item.name}!`);
+        setFeedback(customName ? `You adopted ${customName}! (${item.name})` : `Equipped ${item.name}!`);
         setTimeout(() => setFeedback(null), 3000);
       }
     } catch (err: any) {
       setFeedback(err.message || "Purchase failed");
       setTimeout(() => setFeedback(null), 3000);
+    } finally {
+      setSelectedItem(null);
+      setCustomName("");
     }
   };
 
@@ -201,7 +211,7 @@ export default function ShopPage() {
                   </p>
 
                   <button
-                    onClick={() => handlePurchase(item)}
+                    onClick={() => setSelectedItem(item)}
                     disabled={isPurchased}
                     className={`mt-auto w-full text-sm font-extrabold py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors border ${
                       isPurchased
@@ -227,6 +237,66 @@ export default function ShopPage() {
             })
           )}
         </motion.div>
+
+        {/* Purchase Modal */}
+        <AnimatePresence>
+          {selectedItem && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => { setSelectedItem(null); setCustomName(""); }}
+              className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            >
+              <motion.div 
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white dark:bg-[#1a1740] rounded-[32px] w-full max-w-[320px] p-6 shadow-2xl relative flex flex-col items-center text-center overflow-hidden border border-slate-100 dark:border-[#2e2959]"
+              >
+                <div className="w-32 h-32 flex items-center justify-center mb-4 relative">
+                  <div className="absolute inset-0 bg-amber-100 dark:bg-indigo-900/40 rounded-full blur-xl opacity-50"></div>
+                  <img src={selectedItem.image} alt={selectedItem.name} className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal dark:opacity-90 relative z-10" />
+                </div>
+                
+                <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 leading-tight mb-2">Purchase {selectedItem.name}?</h2>
+                <p className="text-sm font-bold text-slate-500 dark:text-indigo-300 mb-4 bg-slate-50 dark:bg-[#1f1b4a] px-4 py-2 rounded-xl border border-slate-100 dark:border-[#2e2959]">
+                  Effect: {selectedItem.boost}
+                </p>
+
+                {/* Optional Custom Naming Input for Companions or Items */}
+                <input 
+                  type="text" 
+                  placeholder="Give it a custom name? (Optional)"
+                  value={customName}
+                  onChange={(e) => setCustomName(e.target.value)}
+                  className="w-full bg-slate-100 dark:bg-[#2e2959] text-slate-700 dark:text-slate-200 placeholder:text-slate-400 dark:placeholder:text-indigo-400 font-bold text-sm px-4 py-3 rounded-xl mb-6 outline-none focus:ring-2 focus:ring-amber-400 transition-all border border-transparent dark:border-indigo-800/50"
+                  maxLength={20}
+                />
+
+                <div className="flex w-full gap-3">
+                  <button 
+                    onClick={() => { setSelectedItem(null); setCustomName(""); }}
+                    className="flex-1 py-3 bg-slate-100 dark:bg-[#2d285c] text-slate-600 dark:text-indigo-300 rounded-2xl font-extrabold text-sm hover:bg-slate-200 dark:hover:bg-[#3d377c] transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={confirmPurchase}
+                    className="flex-[2] py-3 bg-amber-100/50 dark:bg-[#2d285c] hover:bg-amber-100 dark:hover:bg-[#3d377c] text-amber-900 dark:text-amber-400 rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2 shadow-sm border border-amber-200/50 dark:border-[#4d459c] transition-all"
+                  >
+                    <span>Confirm</span>
+                    <div className="flex items-center gap-1 bg-amber-500/20 px-2 py-0.5 rounded-full">
+                      <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                      <span className="text-[12px]">{selectedItem.cost}</span>
+                    </div>
+                  </button>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
