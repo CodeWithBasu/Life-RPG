@@ -2,17 +2,16 @@ version: '3.8'
 
 services:
   db:
-    image: postgres:15-alpine
-    container_name: life-rpg-postgres
+    image: mongo:7
+    container_name: life-rpg-mongodb
     restart: always
     environment:
-      POSTGRES_USER: johndoe
-      POSTGRES_PASSWORD: randompassword
-      POSTGRES_DB: mydb
+      MONGO_INITDB_DATABASE: liferpg
     ports:
-      - '5432:5432'
+      - '27017:27017'
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - mongodata:/data/db
+    command: mongod --replSet rs0
 
 volumes:
-  pgdata:
+  mongodata:

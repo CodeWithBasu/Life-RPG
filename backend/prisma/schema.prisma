@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 
@@ -18,7 +18,7 @@ datasource db {
 
 
 model User {
-  id           String      @id @default(uuid())
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
   email        String      @unique
   passwordHash String
   displayName  String
@@ -30,8 +30,8 @@ model User {
 }
 
 model Character {
-  id              String        @id @default(uuid())
-  userId          String        @unique
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  userId          String        @unique @db.ObjectId
   user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   level           Int           @default(1)
   currentXp       Int           @default(0)
@@ -44,16 +44,16 @@ model Character {
 }
 
 model Attribute {
-  id          String       @id @default(uuid())
-  characterId String
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  characterId String       @db.ObjectId
   character   Character    @relation(fields: [characterId], references: [id], onDelete: Cascade)
   name        String
   value       Int          @default(0)
 }
 
 model Task {
-  id           String       @id @default(uuid())
-  userId       String
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String       @db.ObjectId
   user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
   title        String
   icon         String?
@@ -67,8 +67,8 @@ model Task {
 }
 
 model Streak {
-  id               String     @id @default(uuid())
-  characterId      String     @unique
+  id               String     @id @default(auto()) @map("_id") @db.ObjectId
+  characterId      String     @unique @db.ObjectId
   character        Character  @relation(fields: [characterId], references: [id], onDelete: Cascade)
   currentStreak    Int        @default(0)
   longestStreak    Int        @default(0)
@@ -76,8 +76,8 @@ model Streak {
 }
 
 model Transaction {
-  id          String          @id @default(uuid())
-  characterId String
+  id          String          @id @default(auto()) @map("_id") @db.ObjectId
+  characterId String          @db.ObjectId
   character   Character       @relation(fields: [characterId], references: [id], onDelete: Cascade)
   type        String
   amount      Int
@@ -86,7 +86,7 @@ model Transaction {
 }
 
 model ShopItem {
-  id          String        @id @default(uuid())
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
   name        String
   cost        Int
   type        String
@@ -95,10 +95,10 @@ model ShopItem {
 }
 
 model Inventory {
-  id          String     @id @default(uuid())
-  characterId String
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  characterId String     @db.ObjectId
   character   Character  @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  shopItemId  String
+  shopItemId  String     @db.ObjectId
   shopItem    ShopItem   @relation(fields: [shopItemId], references: [id], onDelete: Cascade)
   acquiredAt  DateTime   @default(now())
 }
