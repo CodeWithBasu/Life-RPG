@@ -53,6 +53,7 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
           email: normalizedEmail,
           passwordHash,
           displayName: displayName.trim(),
+          avatarUrl: '/avatars/paladin.jpg',
         },
       });
 
@@ -88,12 +89,30 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     const { accessToken, refreshToken } = generateTokens(newUser.id);
     setRefreshCookie(res, refreshToken);
 
+    const userWithCharacter = await prisma.user.findUnique({
+      where: { id: newUser.id },
+      select: {
+        id: true,
+        email: true,
+        displayName: true,
+        avatarUrl: true,
+        createdAt: true,
+        character: {
+          include: {
+            attributes: true,
+            streak: true,
+          },
+        },
+      },
+    });
+
     res.status(201).json({
       accessToken,
-      user: {
+      user: userWithCharacter || {
         id: newUser.id,
         email: newUser.email,
         displayName: newUser.displayName,
+        avatarUrl: '/avatars/paladin.jpg',
       },
     });
   } catch (error) {
@@ -122,12 +141,30 @@ export const login = async (req: Request, res: Response): Promise<void> => {
     const { accessToken, refreshToken } = generateTokens(user.id);
     setRefreshCookie(res, refreshToken);
 
+    const userWithCharacter = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: {
+        id: true,
+        email: true,
+        displayName: true,
+        avatarUrl: true,
+        createdAt: true,
+        character: {
+          include: {
+            attributes: true,
+            streak: true,
+          },
+        },
+      },
+    });
+
     res.json({
       accessToken,
-      user: {
+      user: userWithCharacter || {
         id: user.id,
         email: user.email,
         displayName: user.displayName,
+        avatarUrl: user.avatarUrl || '/avatars/paladin.jpg',
       },
     });
   } catch (error) {

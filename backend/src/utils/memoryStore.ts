@@ -320,6 +320,7 @@ export const memoryUser = {
       email: data.email,
       passwordHash: data.passwordHash,
       displayName: data.displayName,
+      avatarUrl: data.avatarUrl || '/avatars/paladin.jpg',
       createdAt: new Date(),
     };
     db.users.push(user);

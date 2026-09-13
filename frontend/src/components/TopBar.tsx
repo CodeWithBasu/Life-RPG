@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Star, Moon, Sun } from "lucide-react";
+import { Star, Moon, Sun, User as UserIcon } from "lucide-react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { useTheme } from "@/components/ThemeProvider";
 
 export default function TopBar() {
   const ensureAuthenticated = useAuthStore((state) => state.ensureAuthenticated);
+  const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const currencyBalance = useAuthStore((state) => state.user?.character?.currencyBalance);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -21,6 +23,8 @@ export default function TopBar() {
   }, [ensureAuthenticated, setTheme]);
 
   const displayCurrency = (currencyBalance ?? 1240).toLocaleString();
+  const avatarUrl = user?.avatarUrl || "/avatars/paladin.jpg";
+  const isEmojiAvatar = avatarUrl && !avatarUrl.startsWith("/") && !avatarUrl.startsWith("http");
 
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-[#f8fafc] dark:bg-[#13112a] relative z-50 transition-colors duration-300">
@@ -34,7 +38,7 @@ export default function TopBar() {
         </span>
       </Link>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
         <Link
           href="/shop"
           className="gel-bar-yellow text-yellow-900 font-extrabold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm border border-amber-200/50 hover:scale-105 active:scale-95 transition-transform cursor-pointer"
@@ -53,6 +57,28 @@ export default function TopBar() {
           >
             {resolvedTheme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
+        )}
+
+        {/* Profile / Auth Pill */}
+        {isAuthenticated && user ? (
+          <Link
+            href="/more"
+            className="w-9 h-9 rounded-full overflow-hidden border-2 border-amber-300 hover:border-amber-400 shadow-sm flex items-center justify-center bg-slate-100 dark:bg-indigo-950 text-sm hover:scale-105 active:scale-95 transition-transform cursor-pointer"
+            title={`Hero Profile: ${user.displayName}`}
+          >
+            {isEmojiAvatar ? (
+              <span className="text-lg">{avatarUrl}</span>
+            ) : (
+              <img src={avatarUrl} alt={user.displayName} className="w-full h-full object-cover" />
+            )}
+          </Link>
+        ) : (
+          <Link
+            href="/login"
+            className="text-xs font-black px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-amber-950 hover:brightness-105 shadow-sm transition-all"
+          >
+            Log In
+          </Link>
         )}
       </div>
     </header>

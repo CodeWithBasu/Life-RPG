@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronRight, LogOut, X, Check, Bell, Volume2, Shield, HelpCircle, Sliders } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
@@ -8,10 +9,12 @@ import AvatarPickerModal from "@/components/AvatarPickerModal";
 import { soundEngine } from "@/lib/audio";
 
 export default function MorePage() {
+  const router = useRouter();
   const [toastMessage, setToastMessage] = useState("");
   const ensureAuthenticated = useAuthStore((state) => state.ensureAuthenticated);
   const user = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
+  const updateProfile = useAuthStore((state) => state.updateProfile);
   const logout = useAuthStore((state) => state.logout);
 
   // Modals & States
@@ -36,20 +39,24 @@ export default function MorePage() {
     setTimeout(() => setToastMessage(""), 2200);
   };
 
-  const handleSaveProfile = (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editName.trim() || !user) return;
-    setUser({ ...user, displayName: editName.trim() });
+    await updateProfile({ displayName: editName.trim() });
     setActiveModal(null);
     showToast(`Hero name updated to "${editName.trim()}"!`);
   };
 
   const handleLogout = async () => {
-    logout();
-    showToast("Logged out successfully! Resetting hero session...");
-    setTimeout(() => {
-      ensureAuthenticated();
-    }, 1000);
+    try {
+      await logout();
+      showToast("Logged out successfully! Farewell, Hero...");
+      setTimeout(() => {
+        router.push("/login");
+      }, 500);
+    } catch (e) {
+      router.push("/login");
+    }
   };
 
   const displayName = user?.displayName || "Basudev";
@@ -161,7 +168,7 @@ export default function MorePage() {
           className="w-full bg-rose-500 rounded-[24px] p-4 flex items-center justify-center gap-2 text-white shadow-[0_8px_16px_-4px_rgba(244,63,94,0.3),inset_0_-4px_0_rgba(159,18,57,0.4)] hover:brightness-110 transition-all border border-rose-400 cursor-pointer"
         >
           <LogOut className="w-5 h-5" />
-          <span className="font-extrabold text-[16px]">Switch Hero / Reset Session</span>
+          <span className="font-extrabold text-[16px]">Log Out ({displayName})</span>
         </motion.button>
         <p className="text-center text-[11px] font-bold text-slate-400 mt-5">Life RPG v1.0.0</p>
       </motion.div>

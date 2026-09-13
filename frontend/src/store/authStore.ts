@@ -42,9 +42,12 @@ interface AuthState {
   isLoading: boolean;
   setToken: (token: string) => void;
   setUser: (user: User) => void;
+  login: (email: string, password: string) => Promise<User>;
+  signup: (displayName: string, email: string, password: string) => Promise<User>;
+  loginWithDemo: () => Promise<User>;
   updateCharacter: (partial: Partial<Character>) => void;
   updateProfile: (data: { displayName?: string; avatarUrl?: string }) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
   fetchProfile: () => Promise<void>;
   ensureAuthenticated: () => Promise<void>;
 }
@@ -60,11 +63,63 @@ export const useAuthStore = create<AuthState>()(
       setToken: (token) => {
         if (typeof window !== 'undefined') {
           localStorage.setItem('token', token);
+          localStorage.removeItem('explicit_logout');
         }
         set({ token, isAuthenticated: !!token });
       },
 
       setUser: (user) => set({ user, isAuthenticated: true }),
+
+      login: async (email, password) => {
+        set({ isLoading: true });
+        try {
+          const res = await api.post<{ accessToken: string; token?: string; user: User }>('/api/auth/login', {
+            email: email.trim(),
+            password,
+          });
+          const token = res.accessToken || res.token || '';
+          get().setToken(token);
+          if (res.user) {
+            set({ user: res.user, isAuthenticated: true });
+          }
+          await get().fetchProfile();
+          return get().user!;
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+      signup: async (displayName, email, password) => {
+        set({ isLoading: true });
+        try {
+          const res = await api.post<{ accessToken: string; token?: string; user: User }>('/api/auth/signup', {
+            displayName: displayName.trim(),
+            email: email.trim(),
+            password,
+          });
+          const token = res.accessToken || res.token || '';
+          get().setToken(token);
+          if (res.user) {
+            set({ user: res.user, isAuthenticated: true });
+          }
+          await get().fetchProfile();
+          return get().user!;
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+      loginWithDemo: async () => {
+        set({ isLoading: true });
+        try {
+          return await get().login('hero@liferpg.com', 'hero123');
+        } catch {
+          // If login fails (fresh DB), sign up the default hero
+          return await get().signup('Basudev', 'hero@liferpg.com', 'hero123');
+        } finally {
+          set({ isLoading: false });
+        }
+      },
 
       updateCharacter: (partial) => {
         const currentUser = get().user;
@@ -88,64 +143,59 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      logout: () => {
+      logout: async () => {
         if (typeof window !== 'undefined') {
           localStorage.removeItem('token');
+          localStorage.setItem('explicit_logout', 'true');
         }
         set({ token: null, user: null, isAuthenticated: false });
+        try {
+          await api.post('/api/auth/logout');
+        } catch {
+          // Ignore network errors on logout
+        }
       },
 
       ensureAuthenticated: async () => {
-        const currentToken = get().token;
+        const currentToken = get().token || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
         if (currentToken) {
           await get().fetchProfile();
           return;
         }
 
-        // Auto-initialize demo hero session for instant live experience
-        set({ isLoading: true });
-        try {
-          const res = await api.post<{ accessToken: string; user: User }>('/api/auth/login', {
-            email: 'hero@liferpg.com',
-            password: 'hero123',
-          });
+        const wasExplicitLogout = typeof window !== 'undefined' && localStorage.getItem('explicit_logout') === 'true';
+        if (wasExplicitLogout) {
+          set({ isAuthenticated: false, user: null, token: null });
+          return;
+        }
 
-          const token = res.accessToken || (res as any).token;
-          if (token) {
-            get().setToken(token);
-            await get().fetchProfile();
-          }
-        } catch {
-          // If login fails (e.g. fresh DB), register the default hero
-          try {
-            const res = await api.post<{ accessToken: string; user: User }>('/api/auth/signup', {
-              email: 'hero@liferpg.com',
-              password: 'hero123',
-              displayName: 'Basudev',
-            });
-            const token = res.accessToken || (res as any).token;
-            if (token) {
-              get().setToken(token);
-              await get().fetchProfile();
-            }
-          } catch (err) {
-            console.error('Auto-auth error:', err);
-          }
-        } finally {
-          set({ isLoading: false });
+        // Auto-initialize demo hero session for instant guest preview if not explicitly logged out
+        try {
+          await get().loginWithDemo();
+        } catch (err) {
+          console.error('Demo auto-auth error:', err);
         }
       },
 
       fetchProfile: async () => {
         const token = get().token || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
-        if (!token) return;
+        if (!token) {
+          set({ isAuthenticated: false });
+          return;
+        }
 
         set({ isLoading: true });
         try {
           const user = await api.get<User>('/api/me');
           set({ user, isAuthenticated: true });
-        } catch (error) {
+        } catch (error: any) {
           console.error('Failed to fetch profile:', error);
+          if (error?.status === 401 || error?.statusCode === 401) {
+            if (typeof window !== 'undefined') {
+              localStorage.removeItem('token');
+            }
+            set({ token: null, user: null, isAuthenticated: false });
+          }
         } finally {
           set({ isLoading: false });
         }

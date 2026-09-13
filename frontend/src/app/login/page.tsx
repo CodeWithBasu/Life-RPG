@@ -2,36 +2,59 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Mail, Lock, EyeOff, ArrowRight } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles } from "lucide-react";
 import { GoogleIcon, AppleIcon, DiscordIcon } from "@/components/SocialIcons";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
-import { api } from "@/lib/api";
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
   const router = useRouter();
-  const setToken = useAuthStore((state) => state.setToken);
-  const setUser = useAuthStore((state) => state.setUser);
+  const login = useAuthStore((state) => state.login);
+  const loginWithDemo = useAuthStore((state) => state.loginWithDemo);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setIsLoading(true);
     try {
-      const data = await api.post<{ accessToken: string; token?: string; user: any }>('/api/auth/login', { email, password });
-      const token = data.accessToken || data.token || '';
-      setToken(token);
-      if (data.user) setUser(data.user);
+      await login(email, password);
       router.push('/');
     } catch (err: any) {
-      setError(err.message || 'Login failed');
+      setError(err.message || 'Invalid email or password');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDemoLogin = async () => {
+    setError('');
+    setIsLoading(true);
+    try {
+      await loginWithDemo();
+      router.push('/');
+    } catch (err: any) {
+      setError(err.message || 'Demo login failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSocialLogin = async (provider: string) => {
+    setError('');
+    setIsLoading(true);
+    try {
+      // Social login simulates persona entry into the RPG realm
+      await loginWithDemo();
+      router.push('/');
+    } catch (err: any) {
+      setError(`${provider} login failed`);
     } finally {
       setIsLoading(false);
     }
@@ -48,9 +71,12 @@ export default function LoginPage() {
 
       {/* Top Header */}
       <div className="relative z-10 flex flex-col items-center pt-12 px-6">
-        <Link href="/" className="absolute top-12 right-6 text-[15px] font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700">
+        <button 
+          onClick={handleDemoLogin} 
+          className="absolute top-12 right-6 text-[15px] font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 cursor-pointer"
+        >
           Skip
-        </Link>
+        </button>
         
         <div className="flex items-center gap-2 mt-2">
           <span className="text-4xl drop-shadow-sm">👑</span>
@@ -98,7 +124,7 @@ export default function LoginPage() {
           Build better habits, complete quests, and become a brighter you.
         </p>
 
-        {/* 3 Icons */}
+        {/* 3 Pillars */}
         <div className="flex items-center justify-center gap-6 mt-6 mb-4 w-full">
           <div className="flex flex-col items-center gap-1.5 w-20">
             <span className="text-3xl drop-shadow-sm">🗡️</span>
@@ -113,6 +139,17 @@ export default function LoginPage() {
             <span className="text-[10px] font-bold text-slate-600 dark:text-indigo-200 text-center leading-tight">A Kinder<br/>You</span>
           </div>
         </div>
+
+        {/* 1-Click Demo Hero Access Chip */}
+        <button
+          type="button"
+          onClick={handleDemoLogin}
+          disabled={isLoading}
+          className="mb-4 w-full py-2.5 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-black flex items-center justify-center gap-2 transition-all cursor-pointer"
+        >
+          <Sparkles className="w-4 h-4 text-amber-500" />
+          <span>Quick Demo Access: Play as Paladin Basudev</span>
+        </button>
 
         {error && (
           <div className="mb-4 w-full p-3 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 dark:text-red-400 text-sm font-bold text-center">
@@ -129,7 +166,7 @@ export default function LoginPage() {
             </div>
             <input 
               type="email" 
-              placeholder="Email address"
+              placeholder="Email address (e.g. hero@liferpg.com)"
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -143,19 +180,28 @@ export default function LoginPage() {
               <Lock className="w-5 h-5 text-slate-400 dark:text-indigo-400" />
             </div>
             <input 
-              type="password" 
+              type={showPassword ? "text" : "password"} 
               placeholder="Password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full pl-12 pr-12 py-4 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] rounded-2xl text-[15px] font-bold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-amber-400/50 transition-shadow"
             />
-            <button type="button" className="absolute inset-y-0 right-0 pr-4 flex items-center">
-              <EyeOff className="w-5 h-5 text-slate-400 dark:text-indigo-400 hover:text-slate-600 dark:hover:text-indigo-300 transition-colors" />
+            <button 
+              type="button" 
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <Eye className="w-5 h-5 text-amber-500 hover:text-amber-600 transition-colors" />
+              ) : (
+                <EyeOff className="w-5 h-5 text-slate-400 dark:text-indigo-400 hover:text-slate-600 dark:hover:text-indigo-300 transition-colors" />
+              )}
             </button>
           </div>
 
-          {/* Remember Me & Forgot Password */}
+          {/* Remember Me & Demo Hint */}
           <div className="flex items-center justify-between mt-1 mb-2 px-1">
             <label className="flex items-center gap-2 cursor-pointer group">
               <div className="w-5 h-5 rounded-[6px] bg-[#3b82f6] flex items-center justify-center shadow-sm group-active:scale-95 transition-transform">
@@ -163,24 +209,31 @@ export default function LoginPage() {
               </div>
               <span className="text-[13px] font-bold text-slate-600 dark:text-indigo-200">Remember me</span>
             </label>
-            <Link href="#" className="text-[13px] font-bold text-slate-500 dark:text-indigo-300 hover:text-slate-800 dark:hover:text-slate-100">
-              Forgot password?
-            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setEmail('hero@liferpg.com');
+                setPassword('hero123');
+              }}
+              className="text-[12px] font-bold text-amber-600 dark:text-amber-400 hover:underline cursor-pointer"
+            >
+              Fill Demo Login
+            </button>
           </div>
 
           {/* Log In Button */}
           <button 
             type="submit"
             disabled={isLoading}
-            className="w-full bg-gradient-to-b from-amber-300 to-amber-400 disabled:from-amber-200 disabled:to-amber-300 text-amber-950 font-black text-[17px] py-4 rounded-2xl shadow-[0_4px_0_#d97706] disabled:shadow-none hover:translate-y-[2px] hover:shadow-[0_2px_0_#d97706] transition-all active:translate-y-[4px] active:shadow-none flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-b from-amber-300 to-amber-400 disabled:from-amber-200 disabled:to-amber-300 text-amber-950 font-black text-[17px] py-4 rounded-2xl shadow-[0_4px_0_#d97706] disabled:shadow-none hover:translate-y-[2px] hover:shadow-[0_2px_0_#d97706] transition-all active:translate-y-[4px] active:shadow-none flex items-center justify-center gap-2 cursor-pointer"
           >
-            {isLoading ? 'Logging in...' : 'Log In'}
+            {isLoading ? 'Entering Realm...' : 'Log In'}
             {!isLoading && <ArrowRight className="w-5 h-5" />}
           </button>
         </form>
 
         {/* OR Divider */}
-        <div className="flex items-center w-full gap-4 mt-8 mb-6">
+        <div className="flex items-center w-full gap-4 mt-7 mb-5">
           <div className="flex-1 h-px bg-slate-200 dark:bg-[#2e2959]"></div>
           <span className="text-[11px] font-bold text-slate-400 dark:text-indigo-400 tracking-widest uppercase">Or continue with</span>
           <div className="flex-1 h-px bg-slate-200 dark:bg-[#2e2959]"></div>
@@ -188,13 +241,28 @@ export default function LoginPage() {
 
         {/* Social Buttons */}
         <div className="flex items-center justify-center gap-4 w-full">
-          <button type="button" className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
+          <button 
+            type="button" 
+            onClick={() => handleSocialLogin('Google')}
+            className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm cursor-pointer"
+            title="Continue with Google"
+          >
             <GoogleIcon />
           </button>
-          <button type="button" className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
+          <button 
+            type="button" 
+            onClick={() => handleSocialLogin('Apple')}
+            className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm cursor-pointer"
+            title="Continue with Apple"
+          >
             <AppleIcon />
           </button>
-          <button type="button" className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
+          <button 
+            type="button" 
+            onClick={() => handleSocialLogin('Discord')}
+            className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm cursor-pointer"
+            title="Continue with Discord"
+          >
             <DiscordIcon />
           </button>
         </div>

@@ -2,23 +2,23 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
-import { Mail, Lock, EyeOff, ArrowRight, User } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, ArrowRight, User, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
-import { api } from "@/lib/api";
 import { GoogleIcon, AppleIcon, DiscordIcon } from "@/components/SocialIcons";
 
 export default function RegisterPage() {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
   const router = useRouter();
-  const setToken = useAuthStore((state) => state.setToken);
-  const setUser = useAuthStore((state) => state.setUser);
+  const signup = useAuthStore((state) => state.signup);
+  const loginWithDemo = useAuthStore((state) => state.loginWithDemo);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,17 +26,36 @@ export default function RegisterPage() {
     setIsLoading(true);
 
     try {
-      const data = await api.post<{ accessToken: string; token?: string; user: any }>('/api/auth/signup', { 
-        displayName, 
-        email, 
-        password 
-      });
-      const token = data.accessToken || data.token || '';
-      setToken(token);
-      setUser(data.user);
+      await signup(displayName, email, password);
       router.push('/');
     } catch (err: any) {
-      setError(err.message || 'Registration failed');
+      setError(err.message || 'Hero creation failed. Please check details.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleDemoAccess = async () => {
+    setError('');
+    setIsLoading(true);
+    try {
+      await loginWithDemo();
+      router.push('/');
+    } catch (err: any) {
+      setError(err.message || 'Demo access failed');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSocialRegister = async (provider: string) => {
+    setError('');
+    setIsLoading(true);
+    try {
+      await loginWithDemo();
+      router.push('/');
+    } catch (err: any) {
+      setError(`${provider} sign up failed`);
     } finally {
       setIsLoading(false);
     }
@@ -53,9 +72,12 @@ export default function RegisterPage() {
 
       {/* Top Header */}
       <div className="relative z-10 flex flex-col items-center pt-12 px-6">
-        <Link href="/" className="absolute top-12 right-6 text-[15px] font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700">
+        <button 
+          onClick={handleDemoAccess}
+          className="absolute top-12 right-6 text-[15px] font-bold text-slate-500 dark:text-slate-400 hover:text-slate-700 cursor-pointer"
+        >
           Skip
-        </Link>
+        </button>
         
         <div className="flex items-center gap-2 mt-2">
           <span className="text-4xl drop-shadow-sm">👑</span>
@@ -103,7 +125,7 @@ export default function RegisterPage() {
           Join the guild and start your real-life adventure today.
         </p>
 
-        {/* 3 Icons */}
+        {/* 3 Pillars */}
         <div className="flex items-center justify-center gap-6 mt-6 mb-4 w-full">
           <div className="flex flex-col items-center gap-1.5 w-20">
             <span className="text-3xl drop-shadow-sm">🗡️</span>
@@ -118,6 +140,17 @@ export default function RegisterPage() {
             <span className="text-[10px] font-bold text-slate-600 dark:text-indigo-200 text-center leading-tight">A Kinder<br/>You</span>
           </div>
         </div>
+
+        {/* Quick Demo Hero Access Button */}
+        <button
+          type="button"
+          onClick={handleDemoAccess}
+          disabled={isLoading}
+          className="mb-4 w-full py-2.5 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-600 dark:text-amber-400 text-xs font-black flex items-center justify-center gap-2 transition-all cursor-pointer"
+        >
+          <Sparkles className="w-4 h-4 text-amber-500" />
+          <span>Already have a hero? Quick Demo Access</span>
+        </button>
 
         {error && (
           <div className="mb-4 w-full p-3 rounded-xl bg-red-500/10 border border-red-500/50 text-red-500 dark:text-red-400 text-sm font-bold text-center">
@@ -163,16 +196,25 @@ export default function RegisterPage() {
               <Lock className="w-5 h-5 text-slate-400 dark:text-indigo-400" />
             </div>
             <input 
-              type="password" 
-              placeholder="Password"
+              type={showPassword ? "text" : "password"} 
+              placeholder="Password (min. 6 characters)"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               minLength={6}
               className="w-full pl-12 pr-12 py-4 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] rounded-2xl text-[15px] font-bold text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-indigo-400 focus:outline-none focus:ring-2 focus:ring-amber-400/50 transition-shadow"
             />
-            <button type="button" className="absolute inset-y-0 right-0 pr-4 flex items-center">
-              <EyeOff className="w-5 h-5 text-slate-400 dark:text-indigo-400 hover:text-slate-600 dark:hover:text-indigo-300 transition-colors" />
+            <button 
+              type="button" 
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-4 flex items-center cursor-pointer"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <Eye className="w-5 h-5 text-amber-500 hover:text-amber-600 transition-colors" />
+              ) : (
+                <EyeOff className="w-5 h-5 text-slate-400 dark:text-indigo-400 hover:text-slate-600 dark:hover:text-indigo-300 transition-colors" />
+              )}
             </button>
           </div>
 
@@ -180,15 +222,15 @@ export default function RegisterPage() {
           <button 
             type="submit"
             disabled={isLoading}
-            className="w-full mt-2 bg-gradient-to-b from-amber-300 to-amber-400 disabled:from-amber-200 disabled:to-amber-300 text-amber-950 font-black text-[17px] py-4 rounded-2xl shadow-[0_4px_0_#d97706] disabled:shadow-none hover:translate-y-[2px] hover:shadow-[0_2px_0_#d97706] transition-all active:translate-y-[4px] active:shadow-none flex items-center justify-center gap-2"
+            className="w-full mt-2 bg-gradient-to-b from-amber-300 to-amber-400 disabled:from-amber-200 disabled:to-amber-300 text-amber-950 font-black text-[17px] py-4 rounded-2xl shadow-[0_4px_0_#d97706] disabled:shadow-none hover:translate-y-[2px] hover:shadow-[0_2px_0_#d97706] transition-all active:translate-y-[4px] active:shadow-none flex items-center justify-center gap-2 cursor-pointer"
           >
-            {isLoading ? 'Creating Hero...' : 'Sign Up'}
+            {isLoading ? 'Forging Hero Account...' : 'Sign Up'}
             {!isLoading && <ArrowRight className="w-5 h-5" />}
           </button>
         </form>
 
         {/* OR Divider */}
-        <div className="flex items-center w-full gap-4 mt-8 mb-6">
+        <div className="flex items-center w-full gap-4 mt-7 mb-5">
           <div className="flex-1 h-px bg-slate-200 dark:bg-[#2e2959]"></div>
           <span className="text-[11px] font-bold text-slate-400 dark:text-indigo-400 tracking-widest uppercase">Or continue with</span>
           <div className="flex-1 h-px bg-slate-200 dark:bg-[#2e2959]"></div>
@@ -196,13 +238,28 @@ export default function RegisterPage() {
 
         {/* Social Buttons */}
         <div className="flex items-center justify-center gap-4 w-full">
-          <button type="button" className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
+          <button 
+            type="button" 
+            onClick={() => handleSocialRegister('Google')}
+            className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm cursor-pointer"
+            title="Continue with Google"
+          >
             <GoogleIcon />
           </button>
-          <button type="button" className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
+          <button 
+            type="button" 
+            onClick={() => handleSocialRegister('Apple')}
+            className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm cursor-pointer"
+            title="Continue with Apple"
+          >
             <AppleIcon />
           </button>
-          <button type="button" className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
+          <button 
+            type="button" 
+            onClick={() => handleSocialRegister('Discord')}
+            className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm cursor-pointer"
+            title="Continue with Discord"
+          >
             <DiscordIcon />
           </button>
         </div>
