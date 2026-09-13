@@ -158,9 +158,14 @@ export const useAuthStore = create<AuthState>()(
 
       ensureAuthenticated: async () => {
         const currentToken = get().token || (typeof window !== 'undefined' ? localStorage.getItem('token') : null);
+        
         if (currentToken) {
           await get().fetchProfile();
-          return;
+          // If token was valid, isAuthenticated will be true
+          if (get().isAuthenticated) {
+            return;
+          }
+          // If we get here, token was expired. Fall through to re-authenticate via demo/guest mode.
         }
 
         const wasExplicitLogout = typeof window !== 'undefined' && localStorage.getItem('explicit_logout') === 'true';
@@ -173,7 +178,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           await get().loginWithDemo();
         } catch (err) {
-          console.error('Demo auto-auth error:', err);
+          // Ignore demo login errors silently
         }
       },
 
@@ -189,12 +194,13 @@ export const useAuthStore = create<AuthState>()(
           const user = await api.get<User>('/api/me');
           set({ user, isAuthenticated: true });
         } catch (error: any) {
-          console.error('Failed to fetch profile:', error);
           if (error?.status === 401 || error?.statusCode === 401) {
             if (typeof window !== 'undefined') {
               localStorage.removeItem('token');
             }
             set({ token: null, user: null, isAuthenticated: false });
+          } else {
+            console.error('Failed to fetch profile:', error);
           }
         } finally {
           set({ isLoading: false });
