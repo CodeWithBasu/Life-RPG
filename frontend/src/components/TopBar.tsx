@@ -1,6 +1,7 @@
 "use client";
 
 import { Star } from "lucide-react";
+import Link from "next/link";
 
 export default function TopBar() {
   return (
@@ -11,13 +12,12 @@ export default function TopBar() {
           Life RPG
         </span>
       </div>
-      
-      <div className="gel-bar-yellow text-yellow-900 font-extrabold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm border border-amber-200/50">
+      <Link href="/shop" className="gel-bar-yellow text-yellow-900 font-extrabold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm border border-amber-200/50 hover:scale-105 active:scale-95 transition-transform cursor-pointer">
         <div className="w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center shadow-inner">
           <Star className="w-3 h-3 fill-amber-100 text-amber-100" />
         </div>
         <span className="text-sm">1,240</span>
-      </div>
+      </Link>
     </header>
   );
 }

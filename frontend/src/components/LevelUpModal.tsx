@@ -22,12 +22,12 @@ export default function LevelUpModal({ isOpen, onClose, level, stats }: LevelUpM
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0 bg-black/60 backdrop-blur-sm">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-0 bg-black/60 backdrop-blur-sm">
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="w-full max-w-[390px] h-auto max-h-[800px] bg-white rounded-[40px] overflow-hidden relative shadow-2xl flex flex-col"
+            className="w-full max-w-[390px] max-h-[90vh] bg-white rounded-[40px] overflow-hidden relative shadow-2xl flex flex-col overflow-y-auto scrollbar-hide"
           >
             {/* Sunburst Background */}
             <div className="absolute inset-x-0 top-0 h-[350px] bg-[#fffcf0] overflow-hidden">

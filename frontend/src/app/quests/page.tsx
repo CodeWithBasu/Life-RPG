@@ -5,9 +5,18 @@ import { ChevronRight, Heart, Droplet, Star } from "lucide-react";
 import { useState } from "react";
 import LevelUpModal from "@/components/LevelUpModal";
 
+const INITIAL_QUESTS = [
+  { id: 1, iconPath: "/icons/sun.jpg", title: "Morning Routine", desc: "Set the tone for a legendary day.", xp: 50, checked: false },
+  { id: 2, iconPath: "/icons/book.jpg", title: "Study Something", desc: "A sharper mind, a brighter you.", xp: 75, checked: true },
+  { id: 3, iconPath: "/icons/dumbbell.jpg", title: "Move Your Body", desc: "Stronger today. Further tomorrow.", xp: 50, checked: false },
+  { id: 4, iconPath: "/icons/apple.jpg", title: "Healthy Meal", desc: "Fuel your adventure.", xp: 40, checked: false },
+  { id: 5, iconPath: "/icons/leaf.jpg", title: "Be Kind", desc: "Make someone's day brighter.", xp: 30, checked: false },
+];
+
 export default function QuestsPage() {
   const [activeTab, setActiveTab] = useState("Active");
   const [showLevelUp, setShowLevelUp] = useState(false);
+  const [quests, setQuests] = useState(INITIAL_QUESTS);
 
   const mockStats = [
     { label: "Max HP", oldValue: 100, newValue: 110, icon: <Heart className="w-5 h-5 text-red-500 fill-red-500" />, positive: true },
@@ -15,6 +24,16 @@ export default function QuestsPage() {
     { label: "XP Gain", oldValue: "+0%", newValue: "+10%", icon: <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />, positive: true }
   ];
   
+  const toggleQuest = (id: number) => {
+    setQuests(quests.map(q => q.id === id ? { ...q, checked: !q.checked } : q));
+  };
+
+  const filteredQuests = quests.filter(q => {
+    if (activeTab === "Active") return !q.checked;
+    if (activeTab === "Completed") return q.checked;
+    return true; // "All"
+  });
+
   return (
     <div className="flex flex-col gap-5 p-5 max-w-md mx-auto pb-24">
       
@@ -52,51 +71,23 @@ export default function QuestsPage() {
         animate={{ opacity: 1 }}
         className="space-y-3.5"
       >
-        <QuestCard 
-          iconPath="/icons/sun.jpg"
-          title="Morning Routine"
-          desc="Set the tone for a legendary day."
-          xp={50}
-          checked={false}
-        />
-        
-        <QuestCard 
-          iconPath="/icons/book.jpg"
-          title="Study Something"
-          desc="A sharper mind, a brighter you."
-          xp={75}
-          checked={true}
-        />
-
-        <QuestCard 
-          iconPath="/icons/dumbbell.jpg"
-          title="Move Your Body"
-          desc="Stronger today. Further tomorrow."
-          xp={50}
-          checked={false}
-        />
-
-        <QuestCard 
-          iconPath="/icons/apple.jpg"
-          title="Healthy Meal"
-          desc="Fuel your adventure."
-          xp={40}
-          checked={false}
-        />
-
-        <QuestCard 
-          iconPath="/icons/leaf.jpg"
-          title="Be Kind"
-          desc="Make someone's day brighter."
-          xp={30}
-          checked={false}
-        />
+        {filteredQuests.map((q) => (
+          <QuestCard 
+            key={q.id}
+            iconPath={q.iconPath}
+            title={q.title}
+            desc={q.desc}
+            xp={q.xp}
+            checked={q.checked}
+            onToggle={() => toggleQuest(q.id)}
+          />
+        ))}
       </motion.div>
       
       {/* Test Button for Level Up Modal */}
       <button 
         onClick={() => setShowLevelUp(true)}
-        className="mt-4 p-4 bg-yellow-400 font-bold text-yellow-900 rounded-2xl w-full text-center shadow-sm"
+        className="mt-4 p-4 bg-yellow-400 font-bold text-yellow-900 rounded-2xl w-full text-center shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-transform"
       >
         Simulate Level Up
       </button>
@@ -111,11 +102,12 @@ export default function QuestsPage() {
   );
 }
 
-function QuestCard({ iconPath, title, desc, xp, checked }: any) {
+function QuestCard({ iconPath, title, desc, xp, checked, onToggle }: any) {
   return (
     <motion.div 
       whileTap={{ scale: 0.98 }}
-      className={`bg-white rounded-[28px] p-4 shadow-soft flex items-center gap-4 transition-opacity ${checked ? 'opacity-80' : 'opacity-100'}`}
+      onClick={onToggle}
+      className={`bg-white rounded-[28px] p-4 shadow-soft flex items-center gap-4 transition-opacity cursor-pointer ${checked ? 'opacity-80' : 'opacity-100'}`}
     >
       {/* 3D Generated Icon */}
       <div className="w-14 h-14 flex items-center justify-center shrink-0">
@@ -145,6 +137,7 @@ function QuestCard({ iconPath, title, desc, xp, checked }: any) {
           </span>
         </div>
       </div>
+
       
       {/* XP Gel Pill */}
       <div className="shrink-0 flex self-end mb-1">

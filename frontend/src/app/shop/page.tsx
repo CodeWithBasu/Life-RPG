@@ -59,6 +59,14 @@ export default function ShopPage() {
   ];
 
   const filteredItems = activeTab === "All" ? shopItems : shopItems.filter(item => item.category === activeTab);
+  
+  const [purchasedItems, setPurchasedItems] = useState<number[]>([]);
+
+  const handlePurchase = (id: number) => {
+    if (!purchasedItems.includes(id)) {
+      setPurchasedItems([...purchasedItems, id]);
+    }
+  };
 
   return (
     <div className="flex flex-col bg-[#f8fafc] min-h-screen pb-24">
@@ -109,33 +117,45 @@ export default function ShopPage() {
           transition={{ delay: 0.1 }}
           className="grid grid-cols-2 md:grid-cols-3 gap-4"
         >
-          {filteredItems.map((item, index) => (
-            <motion.div 
-              key={item.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white rounded-[28px] p-4 flex flex-col items-center shadow-soft border border-slate-50 hover:shadow-md transition-shadow"
-            >
-              <div className="w-24 h-24 mb-3 flex items-center justify-center">
-                <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
-              </div>
-              <h3 className="text-sm font-black text-slate-800 text-center leading-tight mb-1">
-                {item.name}
-              </h3>
-              <p className="text-[11px] font-bold text-slate-400 mb-4 text-center">
-                {item.boost}
-              </p>
-              
-              <button className="mt-auto w-full bg-amber-100/50 hover:bg-amber-100 text-amber-900 text-sm font-extrabold py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors border border-amber-200/50">
-                <div className="w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center shadow-inner">
-                  <Star className="w-2.5 h-2.5 fill-amber-100 text-amber-100" />
+          {filteredItems.map((item, index) => {
+            const isPurchased = purchasedItems.includes(item.id);
+            return (
+              <motion.div 
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="bg-white rounded-[28px] p-4 flex flex-col items-center shadow-soft border border-slate-50 hover:shadow-md transition-shadow"
+              >
+                <div className="w-24 h-24 mb-3 flex items-center justify-center">
+                  <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
                 </div>
-                {item.price}
-              </button>
-            </motion.div>
-          ))}
+                <h3 className="text-sm font-black text-slate-800 text-center leading-tight mb-1">
+                  {item.name}
+                </h3>
+                <p className="text-[11px] font-bold text-slate-400 mb-4 text-center">
+                  {item.boost}
+                </p>
+                
+                <button 
+                  onClick={() => handlePurchase(item.id)}
+                  className={`mt-auto w-full text-sm font-extrabold py-2 rounded-xl flex items-center justify-center gap-1.5 transition-colors border ${isPurchased ? 'bg-slate-100 text-slate-400 border-slate-200' : 'bg-amber-100/50 hover:bg-amber-100 text-amber-900 border-amber-200/50'}`}
+                >
+                  {isPurchased ? (
+                    "Purchased"
+                  ) : (
+                    <>
+                      <div className="w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center shadow-inner">
+                        <Star className="w-2.5 h-2.5 fill-amber-100 text-amber-100" />
+                      </div>
+                      {item.price}
+                    </>
+                  )}
+                </button>
+              </motion.div>
+            );
+          })}
         </motion.div>
       </div>
     </div>
