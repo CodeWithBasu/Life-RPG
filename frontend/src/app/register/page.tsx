@@ -3,11 +3,11 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Mail, Lock, EyeOff, ArrowRight, User } from "lucide-react";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { api } from "@/lib/api";
+import { GoogleIcon, AppleIcon, DiscordIcon } from "@/components/SocialIcons";
 
 export default function RegisterPage() {
   const [displayName, setDisplayName] = useState('');
@@ -185,6 +185,26 @@ export default function RegisterPage() {
             {!isLoading && <ArrowRight className="w-5 h-5" />}
           </button>
         </form>
+
+        {/* OR Divider */}
+        <div className="flex items-center w-full gap-4 mt-8 mb-6">
+          <div className="flex-1 h-px bg-slate-200 dark:bg-[#2e2959]"></div>
+          <span className="text-[11px] font-bold text-slate-400 dark:text-indigo-400 tracking-widest uppercase">Or continue with</span>
+          <div className="flex-1 h-px bg-slate-200 dark:bg-[#2e2959]"></div>
+        </div>
+
+        {/* Social Buttons */}
+        <div className="flex items-center justify-center gap-4 w-full">
+          <button type="button" className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
+            <GoogleIcon />
+          </button>
+          <button type="button" className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
+            <AppleIcon />
+          </button>
+          <button type="button" className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
+            <DiscordIcon />
+          </button>
+        </div>
 
         {/* Footer */}
         <div className="mt-8 text-center">

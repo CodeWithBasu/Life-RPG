@@ -187,13 +187,15 @@ export default function LoginPage() {
 
         {/* Social Buttons */}
         <div className="flex items-center justify-center gap-4 w-full">
-          {['G', '', '👾'].map((icon, i) => (
-            <button key={i} className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center text-2xl hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
-              <span className={icon === 'G' ? 'text-red-500 font-black text-xl' : icon === '' ? 'text-slate-800 dark:text-slate-100' : 'text-indigo-500'}>
-                {icon}
-              </span>
-            </button>
-          ))}
+          <button type="button" className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
+            <GoogleIcon />
+          </button>
+          <button type="button" className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center text-slate-800 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
+            <AppleIcon />
+          </button>
+          <button type="button" className="flex-1 bg-[#f8fafc] dark:bg-[#13112a] border border-slate-100 dark:border-[#2e2959] py-3 rounded-2xl flex items-center justify-center hover:bg-slate-50 dark:hover:bg-[#2d285c] active:scale-95 transition-all shadow-sm">
+            <DiscordIcon />
+          </button>
         </div>
 
         {/* Footer */}
