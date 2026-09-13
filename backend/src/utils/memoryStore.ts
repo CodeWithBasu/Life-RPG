@@ -460,8 +460,14 @@ export const memoryStreak = {
 };
 
 export const memoryTask = {
-  findMany: async ({ where, orderBy }: any) => {
-    let list = db.tasks.filter((t) => t.userId === where.userId);
+  findMany: async ({ where, orderBy }: any = {}) => {
+    let list = db.tasks;
+    if (where?.userId) {
+      list = list.filter((t) => t.userId === where.userId);
+    }
+    if (where?.status) {
+      list = list.filter((t) => t.status === where.status);
+    }
     if (orderBy?.createdAt === 'desc') {
       list = [...list].sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
     }
@@ -482,6 +488,7 @@ export const memoryTask = {
       status: data.status ?? TaskStatus.ACTIVE,
       createdAt: new Date(),
       completedAt: null,
+      reminderTime: data.reminderTime ?? null,
     };
     db.tasks.push(task);
     return task;
@@ -489,6 +496,12 @@ export const memoryTask = {
   update: async ({ where, data }: any) => {
     const task = db.tasks.find((t) => t.id === where.id);
     if (!task) throw new Error('Task not found');
+    if (data.title !== undefined) task.title = data.title;
+    if (data.category !== undefined) task.category = data.category;
+    if (data.difficulty !== undefined) task.difficulty = data.difficulty;
+    if (data.icon !== undefined) task.icon = data.icon;
+    if (data.reminderTime !== undefined) task.reminderTime = data.reminderTime;
+    if (data.flavorText !== undefined) task.flavorText = data.flavorText;
     if (data.status !== undefined) task.status = data.status;
     if (data.completedAt !== undefined) task.completedAt = data.completedAt;
     return { ...task };
