@@ -1,8 +1,7 @@
 import { Nunito } from "next/font/google";
 import "./globals.css";
 
-import TopBar from "@/components/TopBar";
-import BottomNav from "@/components/BottomNav";
+import AppLayoutWrapper from "@/components/AppLayoutWrapper";
 
 import { ThemeProvider } from "@/components/ThemeProvider";
 
@@ -27,9 +26,7 @@ export default function RootLayout({
         <ThemeProvider>
           {/* Mobile Wrapper */}
           <div className="w-full max-w-md bg-slate-50 dark:bg-[#13112a] min-h-screen relative shadow-2xl overflow-hidden pb-24 transition-colors duration-300">
-            <TopBar />
-            <main>{children}</main>
-            <BottomNav />
+            <AppLayoutWrapper>{children}</AppLayoutWrapper>
           </div>
         </ThemeProvider>
       </body>
