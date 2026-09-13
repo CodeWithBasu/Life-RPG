@@ -120,11 +120,12 @@ export const calculateLevelProgress = (
 };
 
 export const calculateQuestReward = (
-  difficulty: Difficulty,
+  difficulty: Difficulty | string,
   streakDays: number
 ): { xpEarned: number; currencyEarned: number; bonusMultiplier: number } => {
-  const baseHp = DIFFICULTY_XP[difficulty] ?? 10;
-  const currencyEarned = DIFFICULTY_CURRENCY[difficulty] ?? 5;
+  const normalizedDiff = (difficulty as Difficulty) in DIFFICULTY_XP ? (difficulty as Difficulty) : Difficulty.EASY;
+  const baseHp = DIFFICULTY_XP[normalizedDiff] ?? 10;
+  const currencyEarned = DIFFICULTY_CURRENCY[normalizedDiff] ?? 5;
   const bonusMultiplier = calculateStreakBonus(streakDays);
   const xpEarned = Math.round(baseHp * (1 + bonusMultiplier));
 

@@ -202,7 +202,7 @@ export const completeTask = async (req: AuthenticatedRequest, res: Response): Pr
 
       // 4. Calculate XP and Currency rewards with streak bonus
       const { xpEarned, currencyEarned, bonusMultiplier } = calculateQuestReward(
-        existingTask.difficulty,
+        existingTask.difficulty as Difficulty,
         streakEval.currentStreak
       );
 
