@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Mail, Lock, EyeOff, ArrowRight } from "lucide-react";
+import { GoogleIcon, AppleIcon, DiscordIcon } from "@/components/SocialIcons";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";

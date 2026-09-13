@@ -2,7 +2,7 @@
 
 import { Star, Moon, Sun } from "lucide-react";
 import Link from "next/link";
-import { useTheme } from "next-themes";
+import { useTheme } from "@/components/ThemeProvider";
 import { useEffect, useState } from "react";
 
 export default function TopBar() {
