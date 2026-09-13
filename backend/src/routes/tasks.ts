@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { z } from 'zod';
-import { TaskCategory, Difficulty } from '@prisma/client';
+import { TaskCategory, Difficulty } from '../types/enums';
 import { requireAuth } from '../middleware/auth';
 import { validateBody, validateObjectIdParam } from '../middleware/validate';
 import {

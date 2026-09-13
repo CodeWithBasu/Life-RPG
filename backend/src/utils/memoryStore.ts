@@ -1,4 +1,4 @@
-import { TaskCategory, Difficulty, TaskStatus, TransactionType, ShopItemType } from '@prisma/client';
+import { TaskCategory, Difficulty, TaskStatus, TransactionType, ShopItemType } from '../types/enums';
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 

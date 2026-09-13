@@ -3,39 +3,19 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
-enum TaskCategory {
-  INTELLECT
-  STRENGTH
-  DISCIPLINE
-  CREATIVITY
-}
 
-enum Difficulty {
-  EASY
-  MEDIUM
-  HARD
-  EPIC
-}
 
-enum TaskStatus {
-  ACTIVE
-  COMPLETED
-}
 
-enum TransactionType {
-  EARN
-  SPEND
-}
 
-enum ShopItemType {
-  THEME
-  FRAME
-  TITLE
-}
+
+
+
+
+
 
 model User {
   id           String      @id @default(uuid())
@@ -67,7 +47,7 @@ model Attribute {
   id          String       @id @default(uuid())
   characterId String
   character   Character    @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  name        TaskCategory
+  name        String
   value       Int          @default(0)
 }
 
@@ -78,9 +58,9 @@ model Task {
   title        String
   icon         String?
   flavorText   String?
-  category     TaskCategory
-  difficulty   Difficulty
-  status       TaskStatus   @default(ACTIVE)
+  category     String
+  difficulty   String
+  status       String   @default("ACTIVE")
   createdAt    DateTime     @default(now())
   completedAt  DateTime?
   reminderTime DateTime?
@@ -99,7 +79,7 @@ model Transaction {
   id          String          @id @default(uuid())
   characterId String
   character   Character       @relation(fields: [characterId], references: [id], onDelete: Cascade)
-  type        TransactionType
+  type        String
   amount      Int
   reason      String
   createdAt   DateTime        @default(now())
@@ -109,7 +89,7 @@ model ShopItem {
   id          String        @id @default(uuid())
   name        String
   cost        Int
-  type        ShopItemType
+  type        String
 
   inventory   Inventory[]
 }

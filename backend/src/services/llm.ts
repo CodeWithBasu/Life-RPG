@@ -1,4 +1,4 @@
-import { TaskCategory, Difficulty } from '@prisma/client';
+import { TaskCategory, Difficulty } from '../types/enums';
 
 const TIMEOUT_MS = 6000;
 

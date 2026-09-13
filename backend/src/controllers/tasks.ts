@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { TaskCategory, Difficulty, TaskStatus, TransactionType } from '@prisma/client';
+import { TaskCategory, Difficulty, TaskStatus, TransactionType } from '../types/enums';
 import { AuthenticatedRequest } from '../middleware/auth';
 import prisma from '../utils/db';
 import {

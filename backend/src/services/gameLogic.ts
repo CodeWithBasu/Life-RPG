@@ -1,4 +1,4 @@
-import { Difficulty } from '@prisma/client';
+import { Difficulty } from '../types/enums';
 
 export const DIFFICULTY_XP: Record<Difficulty, number> = {
   EASY: 10,

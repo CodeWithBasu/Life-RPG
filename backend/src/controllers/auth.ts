@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { TaskCategory } from '@prisma/client';
+import { TaskCategory } from '../types/enums';
 import prisma from '../utils/db';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-access-super-secret-key-32-chars-min';

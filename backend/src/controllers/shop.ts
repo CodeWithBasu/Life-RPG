@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { TransactionType } from '@prisma/client';
+import { TransactionType } from '../types/enums';
 import { AuthenticatedRequest } from '../middleware/auth';
 import prisma from '../utils/db';
 

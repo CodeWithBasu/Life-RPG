@@ -8,11 +8,13 @@ export enum TaskCategory {
 export enum Difficulty {
   EASY = 'EASY',
   MEDIUM = 'MEDIUM',
-  HARD = 'HARD'
+  HARD = 'HARD',
+  EPIC = 'EPIC'
 }
 
 export enum TaskStatus {
   TODO = 'TODO',
+  ACTIVE = 'ACTIVE',
   COMPLETED = 'COMPLETED'
 }
 
@@ -20,6 +22,7 @@ export enum ShopItemType {
   AVATAR = 'AVATAR',
   THEME = 'THEME',
   TITLE = 'TITLE',
+  FRAME = 'FRAME',
   BADGE = 'BADGE'
 }
 
