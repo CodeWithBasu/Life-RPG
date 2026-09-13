@@ -38,6 +38,11 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password, displayName } = req.body;
 
+    if (!email || !password || !displayName) {
+      res.status(400).json({ error: 'Email, password, and displayName are required' });
+      return;
+    }
+
     const normalizedEmail = email.toLowerCase().trim();
     const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (existing) {
@@ -117,7 +122,9 @@ export const signup = async (req: Request, res: Response): Promise<void> => {
     });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ error: 'Failed to complete registration' });
+    const errorMessage = error instanceof Error ? error.message : 'Failed to complete registration';
+    const statusCode = (error as any)?.statusCode || 500;
+    res.status(statusCode).json({ error: errorMessage });
   }
 };
 
