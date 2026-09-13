@@ -17,6 +17,7 @@ const port = process.env.PORT || 5000;
 const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
+  'https://life-rpg-theta-five.vercel.app',
   process.env.CLIENT_URL,
 ].filter(Boolean) as string[];
 
