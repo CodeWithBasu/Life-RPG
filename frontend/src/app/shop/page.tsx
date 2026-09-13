@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Star, Check } from "lucide-react";
+import { Star, Check, Shield, BookOpen, Sun, Leaf, Crown, Wand2, Scroll, Moon, Sparkles, Zap, Heart } from "lucide-react";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/authStore";
 import { soundEngine } from "@/lib/audio";
@@ -14,13 +14,16 @@ interface ShopItemModel {
   type: "THEME" | "FRAME" | "TITLE";
 }
 
-const ITEM_METADATA: Record<string, { boost: string; image: string; category: string }> = {
-  "Traveler's Cloak": { boost: "+1 Quest Slot", image: "/shop_backpack.jpg", category: "Gear" },
-  "Focus Hood": { boost: "+10 Focus", image: "/shop_hood.jpg", category: "Gear" },
-  "Scholar's Tome": { boost: "+10 XP Gain", image: "/icons/book.jpg", category: "Boosts" },
-  "Dragon Knight Frame": { boost: "+10% Max HP", image: "/icons/sun.jpg", category: "Gear" },
-  "Midnight Obsidian Theme": { boost: "Dark Royal Aura", image: "/shop_backpack.jpg", category: "Cosmetics" },
-  "The Disciplined Title": { boost: "+5% Streak XP", image: "/icons/leaf.jpg", category: "Cosmetics" },
+const ITEM_METADATA: Record<string, { boost: string; icon: React.ReactNode; category: string }> = {
+  "Traveler's Cloak": { boost: "+1 Quest Slot", icon: <Shield className="w-12 h-12 text-blue-500" />, category: "Gear" },
+  "Focus Hood": { boost: "+10 Focus", icon: <BookOpen className="w-12 h-12 text-purple-500" />, category: "Gear" },
+  "Scholar's Tome": { boost: "+10 XP Gain", icon: <BookOpen className="w-12 h-12 text-amber-600" />, category: "Boosts" },
+  "Dragon Knight Frame": { boost: "+10% Max HP", icon: <Sun className="w-12 h-12 text-yellow-500" />, category: "Gear" },
+  "The Disciplined Title": { boost: "+5% Streak XP", icon: <Leaf className="w-12 h-12 text-green-500" />, category: "Cosmetics" },
+  "Arcane Scholar Frame": { boost: "+30 Style", icon: <Sparkles className="w-12 h-12 text-emerald-500" />, category: "Cosmetics" },
+  "Shadow Realm Walker Title": { boost: "+45 Style", icon: <Moon className="w-12 h-12 text-indigo-600" />, category: "Cosmetics" },
+  "Midnight Obsidian Theme": { boost: "Dark Royal Aura", icon: <Moon className="w-12 h-12 text-slate-700" />, category: "Cosmetics" },
+  "Golden Solar Theme": { boost: "+75 Style", icon: <Zap className="w-12 h-12 text-yellow-400" />, category: "Cosmetics" },
 };
 
 export default function ShopPage() {
@@ -96,7 +99,7 @@ export default function ShopPage() {
   const mappedItems = shopItems.map((item) => {
     const meta = ITEM_METADATA[item.name] || {
       boost: `+${item.cost} Style`,
-      image: "/icons/leaf.jpg",
+      icon: <Crown className="w-12 h-12 text-amber-500" />,
       category: item.type === "THEME" ? "Cosmetics" : item.type === "FRAME" ? "Gear" : "Boosts",
     };
     return {
@@ -196,12 +199,8 @@ export default function ShopPage() {
                   whileTap={{ scale: 0.95 }}
                   className="bg-white dark:bg-[#1f1b4a] rounded-[28px] p-4 flex flex-col items-center shadow-soft dark:shadow-none border border-slate-50 dark:border-[#2e2959] hover:shadow-md transition-shadow"
                 >
-                  <div className="w-24 h-24 mb-3 flex items-center justify-center">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal dark:opacity-90"
-                    />
+                  <div className="w-24 h-24 mb-3 flex items-center justify-center bg-slate-50 dark:bg-[#2d285c] rounded-2xl">
+                    {item.icon}
                   </div>
                   <h3 className="text-sm font-black text-slate-800 dark:text-slate-100 text-center leading-tight mb-1">
                     {item.name}
@@ -257,7 +256,9 @@ export default function ShopPage() {
               >
                 <div className="w-32 h-32 flex items-center justify-center mb-4 relative">
                   <div className="absolute inset-0 bg-amber-100 dark:bg-indigo-900/40 rounded-full blur-xl opacity-50"></div>
-                  <img src={selectedItem.image} alt={selectedItem.name} className="w-full h-full object-contain mix-blend-multiply dark:mix-blend-normal dark:opacity-90 relative z-10" />
+                  <div className="relative z-10 bg-white dark:bg-[#1f1b4a] rounded-2xl p-4 flex items-center justify-center">
+                    {selectedItem.icon}
+                  </div>
                 </div>
                 
                 <h2 className="text-xl font-black text-slate-800 dark:text-slate-100 leading-tight mb-2">Purchase {selectedItem.name}?</h2>
