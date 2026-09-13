@@ -15,15 +15,12 @@ interface ShopItemModel {
 }
 
 const ITEM_METADATA: Record<string, { boost: string; icon: React.ReactNode; category: string }> = {
-  "Traveler's Cloak": { boost: "+1 Quest Slot", icon: <Shield className="w-12 h-12 text-blue-500" />, category: "Gear" },
-  "Focus Hood": { boost: "+10 Focus", icon: <BookOpen className="w-12 h-12 text-purple-500" />, category: "Gear" },
-  "Scholar's Tome": { boost: "+10 XP Gain", icon: <BookOpen className="w-12 h-12 text-amber-600" />, category: "Boosts" },
-  "Dragon Knight Frame": { boost: "+10% Max HP", icon: <Sun className="w-12 h-12 text-yellow-500" />, category: "Gear" },
-  "The Disciplined Title": { boost: "+5% Streak XP", icon: <Leaf className="w-12 h-12 text-green-500" />, category: "Cosmetics" },
-  "Arcane Scholar Frame": { boost: "+30 Style", icon: <Sparkles className="w-12 h-12 text-emerald-500" />, category: "Cosmetics" },
-  "Shadow Realm Walker Title": { boost: "+45 Style", icon: <Moon className="w-12 h-12 text-indigo-600" />, category: "Cosmetics" },
-  "Midnight Obsidian Theme": { boost: "Dark Royal Aura", icon: <Moon className="w-12 h-12 text-slate-700" />, category: "Cosmetics" },
-  "Golden Solar Theme": { boost: "+75 Style", icon: <Zap className="w-12 h-12 text-yellow-400" />, category: "Cosmetics" },
+  "Traveler's Cloak": { boost: "+1 Quest Slot", icon: <img src="/icons/backpack.jpg" alt="Traveler's Cloak" className="w-20 h-20 object-contain mix-blend-multiply" />, category: "Gear" },
+  "Focus Hood": { boost: "+10 Focus", icon: <img src="/icons/hood.jpg" alt="Focus Hood" className="w-20 h-20 object-contain mix-blend-multiply" />, category: "Gear" },
+  "Scholar's Tome": { boost: "+10 XP Gain", icon: <img src="/icons/tome.jpg" alt="Scholar's Tome" className="w-20 h-20 object-contain mix-blend-multiply" />, category: "Boosts" },
+  "Lantern of Clarity": { boost: "+10 Mana Regen", icon: <img src="/icons/lantern.jpg" alt="Lantern of Clarity" className="w-20 h-20 object-contain mix-blend-multiply" />, category: "Gear" },
+  "Lucky Charm": { boost: "+5% XP Gain", icon: <img src="/icons/clover.jpg" alt="Lucky Charm" className="w-20 h-20 object-contain mix-blend-multiply" />, category: "Boosts" },
+  "Companion": { boost: "A friend for the journey", icon: <img src="/icons/corgi.jpg" alt="Companion" className="w-20 h-20 object-contain mix-blend-multiply" />, category: "Cosmetics" },
 };
 
 export default function ShopPage() {

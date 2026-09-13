@@ -4,35 +4,35 @@ const prisma = new PrismaClient();
 
 const SAMPLE_SHOP_ITEMS = [
   {
-    name: 'Midnight Obsidian Theme',
-    cost: 50,
-    type: 'THEME',
-  },
-  {
-    name: 'Golden Solar Theme',
-    cost: 75,
-    type: 'THEME',
-  },
-  {
-    name: 'Dragon Knight Frame',
-    cost: 30,
+    name: "Traveler's Cloak",
+    cost: 500,
     type: 'FRAME',
   },
   {
-    name: 'Arcane Scholar Frame',
-    cost: 30,
+    name: "Focus Hood",
+    cost: 300,
     type: 'FRAME',
   },
   {
-    name: 'The Disciplined Title',
-    cost: 20,
-    type: 'TITLE',
+    name: "Scholar's Tome",
+    cost: 400,
+    type: 'THEME',
   },
   {
-    name: 'Shadow Realm Walker Title',
-    cost: 45,
-    type: 'TITLE',
+    name: "Lantern of Clarity",
+    cost: 350,
+    type: 'FRAME',
   },
+  {
+    name: "Lucky Charm",
+    cost: 250,
+    type: 'THEME',
+  },
+  {
+    name: "Companion",
+    cost: 600,
+    type: 'TITLE',
+  }
 ];
 
 async function seed() {
