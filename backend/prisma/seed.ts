@@ -1,4 +1,4 @@
-import { PrismaClient, ShopItemType } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -6,32 +6,32 @@ const SAMPLE_SHOP_ITEMS = [
   {
     name: 'Midnight Obsidian Theme',
     cost: 50,
-    type: ShopItemType.THEME,
+    type: 'THEME',
   },
   {
     name: 'Golden Solar Theme',
     cost: 75,
-    type: ShopItemType.THEME,
+    type: 'THEME',
   },
   {
     name: 'Dragon Knight Frame',
     cost: 30,
-    type: ShopItemType.FRAME,
+    type: 'FRAME',
   },
   {
     name: 'Arcane Scholar Frame',
     cost: 30,
-    type: ShopItemType.FRAME,
+    type: 'FRAME',
   },
   {
     name: 'The Disciplined Title',
     cost: 20,
-    type: ShopItemType.TITLE,
+    type: 'TITLE',
   },
   {
     name: 'Shadow Realm Walker Title',
     cost: 45,
-    type: ShopItemType.TITLE,
+    type: 'TITLE',
   },
 ];
 
