@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Flame, Target, Award, Swords, Leaf, Heart } from "lucide-react";
 
 export default function StatsPage() {
   return (
@@ -25,7 +24,10 @@ export default function StatsPage() {
         <div className="relative w-40 h-40 mb-4">
           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="45" fill="none" stroke="#f1f5f9" strokeWidth="10" />
-            <circle 
+            <motion.circle 
+              initial={{ strokeDashoffset: 282.7 }}
+              animate={{ strokeDashoffset: 100 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
               cx="50" 
               cy="50" 
               r="45" 
@@ -34,7 +36,6 @@ export default function StatsPage() {
               strokeWidth="10" 
               strokeLinecap="round" 
               strokeDasharray="282.7" 
-              strokeDashoffset="100" 
               className="drop-shadow-sm"
             />
           </svg>
@@ -60,17 +61,25 @@ export default function StatsPage() {
         className="grid grid-cols-2 gap-4"
       >
         <div className="bg-white rounded-[24px] p-4 shadow-soft flex flex-col items-center text-center">
-          <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-3">
-            <Flame className="w-6 h-6 text-orange-500 fill-orange-500" />
-          </div>
+          <motion.div 
+            animate={{ y: [-2, 2, -2] }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            className="w-16 h-16 flex items-center justify-center mb-1"
+          >
+            <img src="/icons/flame.jpg" className="w-full h-full object-contain mix-blend-multiply" alt="Flame" />
+          </motion.div>
           <span className="text-[22px] font-black text-slate-800">5 Days</span>
           <span className="text-[11px] font-bold text-slate-400 mt-0.5">Current Streak</span>
         </div>
 
         <div className="bg-white rounded-[24px] p-4 shadow-soft flex flex-col items-center text-center">
-          <div className="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center mb-3">
-            <Award className="w-6 h-6 text-indigo-500 fill-indigo-500" />
-          </div>
+          <motion.div 
+            animate={{ scale: [1, 1.05, 1], rotate: [-2, 2, -2] }}
+            transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+            className="w-16 h-16 flex items-center justify-center mb-1"
+          >
+            <img src="/icons/trophy.jpg" className="w-full h-full object-contain mix-blend-multiply" alt="Trophy" />
+          </motion.div>
           <span className="text-[22px] font-black text-slate-800">42</span>
           <span className="text-[11px] font-bold text-slate-400 mt-0.5">Quests Completed</span>
         </div>
@@ -86,30 +95,30 @@ export default function StatsPage() {
         <h3 className="text-[15px] font-extrabold text-slate-800 mb-1 px-1">Attribute Mastery</h3>
         
         <AttributeRow 
-          icon={<Swords className="w-5 h-5 text-rose-500" />}
-          iconBg="bg-rose-100"
+          iconPath="/icons/sword.jpg"
           title="Discipline"
           level={4}
           progress={60}
           color="bg-rose-500"
+          delay={0}
         />
         
         <AttributeRow 
-          icon={<Leaf className="w-5 h-5 text-emerald-500 fill-emerald-500" />}
-          iconBg="bg-emerald-100"
+          iconPath="/icons/leaf.jpg"
           title="Growth"
           level={7}
           progress={30}
           color="bg-emerald-500"
+          delay={0.2}
         />
         
         <AttributeRow 
-          icon={<Heart className="w-5 h-5 text-blue-500 fill-blue-500" />}
-          iconBg="bg-blue-100"
-          title="Kindness"
+          iconPath="/icons/sun.jpg"
+          title="Positivity"
           level={5}
           progress={80}
-          color="bg-blue-500"
+          color="bg-yellow-400"
+          delay={0.4}
         />
       </motion.div>
 
@@ -117,24 +126,28 @@ export default function StatsPage() {
   );
 }
 
-function AttributeRow({ icon, iconBg, title, level, progress, color }: any) {
+function AttributeRow({ iconPath, title, level, progress, color, delay }: any) {
   return (
     <div className="flex items-center gap-4">
-      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${iconBg}`}>
-        {icon}
-      </div>
+      <motion.div 
+        animate={{ rotate: [-5, 5, -5] }}
+        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: delay }}
+        className="w-14 h-14 flex items-center justify-center shrink-0"
+      >
+        <img src={iconPath} className="w-full h-full object-contain mix-blend-multiply" alt={title} />
+      </motion.div>
       
       <div className="flex-1">
         <div className="flex justify-between items-end mb-1.5">
           <span className="text-[14px] font-extrabold text-slate-700">{title}</span>
           <span className="text-[11px] font-bold text-slate-400">Lv. {level}</span>
         </div>
-        <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner-soft">
+        <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden shadow-inner-soft relative">
           <motion.div 
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className={`h-full rounded-full ${color}`}
+            transition={{ duration: 1, ease: "easeOut", delay: delay }}
+            className={`absolute top-0 left-0 bottom-0 rounded-full ${color} shadow-sm`}
           />
         </div>
       </div>
