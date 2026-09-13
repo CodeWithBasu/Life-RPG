@@ -37,12 +37,13 @@ export const createTask = async (req: AuthenticatedRequest, res: Response): Prom
       return;
     }
 
-    const { title, category, difficulty, flavorText, icon } = req.body as {
+    const { title, category, difficulty, flavorText, icon, reminderTime } = req.body as {
       title: string;
       category: TaskCategory;
       difficulty: Difficulty;
       flavorText?: string;
       icon?: string;
+      reminderTime?: string;
     };
 
     // If no custom flavorText provided, attempt dark-fantasy rewrite via LLM with safe fallback
@@ -59,6 +60,7 @@ export const createTask = async (req: AuthenticatedRequest, res: Response): Prom
         category,
         difficulty,
         status: TaskStatus.ACTIVE,
+        reminderTime: reminderTime ? new Date(reminderTime) : null,
       },
     });
 
@@ -66,6 +68,50 @@ export const createTask = async (req: AuthenticatedRequest, res: Response): Prom
   } catch (error) {
     console.error('createTask error:', error);
     res.status(500).json({ error: 'Failed to create quest' });
+  }
+};
+
+export const editTask = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  try {
+    const userId = req.user?.id;
+    const taskId = req.params.id as string;
+
+    if (!userId) {
+      res.status(401).json({ error: 'Authentication required' });
+      return;
+    }
+
+    const existingTask = await prisma.task.findUnique({
+      where: { id: taskId },
+    });
+
+    if (!existingTask) {
+      res.status(404).json({ error: 'Quest not found' });
+      return;
+    }
+
+    if (existingTask.userId !== userId) {
+      res.status(403).json({ error: 'Forbidden: You do not own this quest' });
+      return;
+    }
+
+    const { title, category, difficulty, icon, reminderTime } = req.body;
+
+    const task = await prisma.task.update({
+      where: { id: taskId },
+      data: {
+        title: title?.trim(),
+        category,
+        difficulty,
+        icon: icon?.trim() || null,
+        reminderTime: reminderTime ? new Date(reminderTime) : null,
+      },
+    });
+
+    res.json(task);
+  } catch (error) {
+    console.error('editTask error:', error);
+    res.status(500).json({ error: 'Failed to update quest' });
   }
 };
 
